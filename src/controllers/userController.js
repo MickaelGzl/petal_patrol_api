@@ -3,6 +3,7 @@ import {
   createUser,
   findUserByEmail,
   comparePasswords,
+  findAllUser,
 } from "../queries/userQueries.js";
 
 export const userCreate = async (req, res) => {
@@ -64,6 +65,19 @@ export const userSignOut = (req, res) => {
   } catch (error) {
     console.error(error);
     message = "Erreur lors de la déconnexion de l'utilisateur.";
+    res.status(500).json({ message });
+  }
+};
+
+export const userFindAll = async (req, res) => {
+  let message;
+  try {
+    const allUsers = await findAllUser(req.query);
+    message = "La liste des utilisateurs à bien été récupérée.";
+    res.json({ message, allUsers });
+  } catch (error) {
+    console.error(error);
+    message = "Erreur lors de la récupération de la liste des utilisateurs.";
     res.status(500).json({ message });
   }
 };

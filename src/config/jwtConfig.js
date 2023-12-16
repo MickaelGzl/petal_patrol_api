@@ -4,20 +4,21 @@ import { findUserById } from "../queries/userQueries.js";
 
 dotenv.config();
 
+const secret = process.env.JWT_SECRET_KEY;
+
 const createToken = (user) => {
   const token = jwt.sign(
     {
       sub: user.id,
       exp: Math.floor(Date.now() / 100) + 60 * 60 * 24 * 2,
     },
-    process.env.JWT_SECRET_KEY
+    secret
   );
   return token;
 };
 
 export const extractUserFromToken = async (req, res, next) => {
   const token = req.cookies.jwt;
-  //   console.log("token:", token);
   if (token) {
     try {
       let decodedToken = jwt.verify(token, secret);
@@ -28,10 +29,9 @@ export const extractUserFromToken = async (req, res, next) => {
         req.user = user;
       }
     } catch (error) {
+      console.error(error);
       res.clearCookie("jwt");
     }
-  } else {
-    // console.log("no token, next");
   }
   next();
 };
