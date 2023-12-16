@@ -60,3 +60,11 @@ export const createUser = async (user, role) => {
 export const comparePasswords = (password, hashedPassword) => {
   return bcrypt.compare(password, hashedPassword);
 };
+
+export const updateUser = (user, newData) => {
+  return user.update(newData);
+};
+
+export const deleteUser = (id) => {
+  return User.destroy({ where: { id } });
+};

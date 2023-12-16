@@ -1,6 +1,14 @@
 import { Router } from "express";
-import { ensureIsAuthenticated } from "../../config/authConfig.js";
-import { userFindAll, userFindOne } from "../../controllers/userController.js";
+import {
+  ensureIsAuthenticated,
+  ensureUserHaveRights,
+} from "../../config/authConfig.js";
+import {
+  userDelete,
+  userFindAll,
+  userFindOne,
+  userUpdate,
+} from "../../controllers/userController.js";
 
 export const router = Router();
 
@@ -16,12 +24,6 @@ router.post("/reset-password/:password-token/:server-token", (req, res) =>
   )
 );
 
-router.put("/:id", (req, res) =>
-  res.send("update user by id. Need admin or id === req.user.id")
-);
+router.put("/:id", ensureIsAuthenticated, ensureUserHaveRights, userUpdate);
 
-router.delete("/:id", (req, res) =>
-  res.send(
-    "delete user by id. need Admin or id === req.user.id. Also need csrf token"
-  )
-);
+router.delete("/:id", ensureIsAuthenticated, ensureUserHaveRights, userDelete);

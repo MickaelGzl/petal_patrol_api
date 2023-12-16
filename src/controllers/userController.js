@@ -5,6 +5,7 @@ import {
   comparePasswords,
   findAllUser,
   findUserById,
+  updateUser,
 } from "../queries/userQueries.js";
 
 export const userCreate = async (req, res) => {
@@ -89,13 +90,44 @@ export const userFindOne = async (req, res) => {
     const user = await findUserById(req.params.id);
     if (!user) {
       message = "Aucun utilisateur correspondant à l'identifiant fourni.";
-      res.status(404).json({ message, id: req.params.id });
+      return res.status(404).json({ message, id: req.params.id });
     }
     message = `L'utilisateur ${id} à bien été récupéré.`;
     res.json({ message, user });
   } catch (error) {
     console.error(error);
     message = "Erreur lors de la récupération de l'utilisateur.";
+    res.status(500).json({ message });
+  }
+};
+
+export const userUpdate = async (req, res) => {
+  let message;
+  try {
+    const user = await findUserById(req.params.id);
+    if (!user) {
+      message = "Aucun utilisateur correspondant à l'identifiant fourni.";
+      return res.status(404).json({ message, id: req.params.id });
+    }
+    const updatedUser = await updateUser(user, req.body);
+    message = "Mise à jour de l'utilisateur réussi.";
+    res.json({ message, updatedUser });
+  } catch (error) {
+    console.error(error);
+    message = "Erreur lors de la modification de l'utilisateur.";
+    res.status(500).json({ message });
+  }
+};
+
+export const userDelete = async (req, res) => {
+  let message;
+  try {
+    await userDelete(req.params.id);
+    message = `L'utilisateur ${req.params.id} à bien été supprimé.`;
+    res.json({ message });
+  } catch (error) {
+    console.error(error);
+    message = "Erreur lors de la suppression de l'utilisateur.";
     res.status(500).json({ message });
   }
 };
