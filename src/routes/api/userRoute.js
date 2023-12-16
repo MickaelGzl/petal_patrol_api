@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { ensureIsAuthenticated } from "../../config/authConfig.js";
-import { userFindAll } from "../../controllers/userController.js";
+import { userFindAll, userFindOne } from "../../controllers/userController.js";
 
 export const router = Router();
 
 router.get("/", ensureIsAuthenticated, userFindAll);
-router.get("/:id", (req, res) => res.send("get user by id"));
+router.get("/:id", ensureIsAuthenticated, userFindOne);
 
 router.post("/reset-password", (req, res) =>
   res.send("find user by email and send reset password mail")

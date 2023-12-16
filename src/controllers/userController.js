@@ -4,6 +4,7 @@ import {
   findUserByEmail,
   comparePasswords,
   findAllUser,
+  findUserById,
 } from "../queries/userQueries.js";
 
 export const userCreate = async (req, res) => {
@@ -78,6 +79,23 @@ export const userFindAll = async (req, res) => {
   } catch (error) {
     console.error(error);
     message = "Erreur lors de la récupération de la liste des utilisateurs.";
+    res.status(500).json({ message });
+  }
+};
+
+export const userFindOne = async (req, res) => {
+  let message;
+  try {
+    const user = await findUserById(req.params.id);
+    if (!user) {
+      message = "Aucun utilisateur correspondant à l'identifiant fourni.";
+      res.status(404).json({ message, id: req.params.id });
+    }
+    message = `L'utilisateur ${id} à bien été récupéré.`;
+    res.json({ message, user });
+  } catch (error) {
+    console.error(error);
+    message = "Erreur lors de la récupération de l'utilisateur.";
     res.status(500).json({ message });
   }
 };
