@@ -1,11 +1,16 @@
 import { Router } from "express";
+import {
+  userCreate,
+  userSignIn,
+  userSignOut,
+} from "../../controllers/userController.js";
 
 export const router = Router();
 
-router.get("/signout", (req, res) => res.send("sign out"));
+router.get("/signout", userSignOut);
 
-router.post("/signup", (req, res) => res.send("sign up"));
-router.post("/signin", (req, res) => res.send("sign in"));
+router.post("/signup", userCreate);
+router.post("/signin", userSignIn);
 
 router.post("verify-server-token", (req, res) =>
   res.send("compare token with secret key of server")

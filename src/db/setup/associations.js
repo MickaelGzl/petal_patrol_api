@@ -1,6 +1,4 @@
 export function applyAssociations(sequelize) {
-  console.log("MODELS");
-  console.log(sequelize.models);
   const { user, role, plant, offer, proposal, comment, rapport } =
     sequelize.models;
 
