@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { findUserById } from "../queries/userQueries";
+import { findUserById } from "../queries/userQueries.js";
 
 dotenv.config();
 
