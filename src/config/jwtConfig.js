@@ -32,7 +32,6 @@ export const extractUserFromToken = async (req, res, next) => {
         const role = userRoles.map((role) => role.dataValues.role);
 
         req.user = { ...user.dataValues, role };
-        console.log(req.user);
       }
     } catch (error) {
       console.error(error);

@@ -6,6 +6,7 @@ import {
   findAllUser,
   findUserById,
   updateUser,
+  deleteUser,
 } from "../queries/userQueries.js";
 
 export const userCreate = async (req, res) => {
@@ -111,7 +112,10 @@ export const userUpdate = async (req, res) => {
     }
     const updatedUser = await updateUser(user, req.body);
     message = "Mise à jour de l'utilisateur réussi.";
-    res.json({ message, updatedUser });
+    res.json({
+      message,
+      user: { name: updatedUser.name, email: updatedUser.email },
+    });
   } catch (error) {
     console.error(error);
     message = "Erreur lors de la modification de l'utilisateur.";
@@ -122,7 +126,7 @@ export const userUpdate = async (req, res) => {
 export const userDelete = async (req, res) => {
   let message;
   try {
-    await userDelete(req.params.id);
+    await deleteUser(req.params.id);
     message = `L'utilisateur ${req.params.id} à bien été supprimé.`;
     res.json({ message });
   } catch (error) {
