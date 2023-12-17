@@ -27,6 +27,10 @@ export const UserModel = (sequelize, DataTypes) => {
       password_token: {
         type: DataTypes.STRING,
       },
+      password_token_expiration: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
       activation_token: {
         type: DataTypes.STRING,
       },
