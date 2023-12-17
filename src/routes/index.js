@@ -13,6 +13,7 @@ router.use("/api", apiRoute);
 // router.get("/test", (req, res) => {
 //   res.render("resetPasswordTemplate", { email: "toto", url: "tata" });
 // });
+
 router.use("*", (req, res) => {
   res.send("no route corresponding");
 });
