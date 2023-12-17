@@ -75,7 +75,11 @@ export const userSignOut = (req, res) => {
 export const userFindAll = async (req, res) => {
   let message;
   try {
-    const allUsers = await findAllUser(req.query);
+    if (req.query.role && !req.user.role.includes("ADMIN")) {
+      message = "Vous n'avez pas les droits d'accès à cette ressource";
+      return res.status(403).json({ message });
+    }
+    const allUsers = await findAllUser(req.query, req.user);
     message = "La liste des utilisateurs à bien été récupérée.";
     res.json({ message, allUsers });
   } catch (error) {
