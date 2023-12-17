@@ -33,7 +33,7 @@ export const userCreate = async (req, res) => {
     message = "L'utilisateur à bien été crée";
     res.json({ message, user });
   } catch (error) {
-    console.error(error);
+    console.error("<userController: userCreate>", error);
     message = "Erreur lors de la création de l'utilisateur.";
     res.status(500).json({ message });
   }
@@ -75,7 +75,7 @@ export const userSignIn = async (req, res) => {
     message = "Connexion réussi.";
     return res.json({ message, user: { ...user.dataValues, password: "" } });
   } catch (error) {
-    console.error(error);
+    console.error("<userController: userSignIn>", error);
     message = "Erreur lors de la connexion de l'utilisateur.";
     return res.status(500).json({ message });
   }
@@ -92,7 +92,7 @@ export const userSignOut = (req, res) => {
     message = "Déconnexion réussi.";
     res.json({ message });
   } catch (error) {
-    console.error(error);
+    console.error("<userController: userSignOut>", error);
     message = "Erreur lors de la déconnexion de l'utilisateur.";
     res.status(500).json({ message });
   }
@@ -125,7 +125,7 @@ export const userFindAll = async (req, res) => {
           }),
     });
   } catch (error) {
-    console.error(error);
+    console.error("<userController: userFindAll>", error);
     message = "Erreur lors de la récupération de la liste des utilisateurs.";
     res.status(500).json({ message });
   }
@@ -145,7 +145,7 @@ export const userFindOne = async (req, res) => {
     message = `L'utilisateur ${id} à bien été récupéré.`;
     res.json({ message, user });
   } catch (error) {
-    console.error(error);
+    console.error("<userController: userFindOne>", error);
     message = "Erreur lors de la récupération de l'utilisateur.";
     res.status(500).json({ message });
   }
@@ -169,7 +169,7 @@ export const userUpdate = async (req, res) => {
       user: { name: updatedUser.name, email: updatedUser.email },
     });
   } catch (error) {
-    console.error(error);
+    console.error("<userController: userUpdate>", error);
     message = "Erreur lors de la modification de l'utilisateur.";
     res.status(500).json({ message });
   }
@@ -185,7 +185,7 @@ export const userDelete = async (req, res) => {
     message = `L'utilisateur ${req.params.id} à bien été supprimé.`;
     res.json({ message });
   } catch (error) {
-    console.error(error);
+    console.error("<userController: userDelete>", error);
     message = "Erreur lors de la suppression de l'utilisateur.";
     res.status(500).json({ message });
   }
@@ -217,7 +217,7 @@ export const userPasswordForgot = async (req, res) => {
     });
     res.end();
   } catch (error) {
-    console.error(error);
+    console.error("<userController: userPasswordForgot>", error);
     message =
       "Erreur lors de l'envoi de mail de réinitialisation de mot de passe.";
     res.status(500).json({ message });
@@ -252,7 +252,7 @@ export const userResetPassword = async (req, res) => {
       "Votre mot de passe à été modifié avec succès. Vous pouvez des à présent vous reconnecter avec votre nouveau mot de passe";
     return res.json({ message });
   } catch (error) {
-    console.error(error);
+    console.error("<userController: userResetPassword>", error);
     message = "Erreur lors de la réinitialisation du mot de passe.";
     res.status(500).json({ message });
   }
