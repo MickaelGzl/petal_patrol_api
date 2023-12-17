@@ -9,6 +9,7 @@ import {
   findUserById,
   updateUser,
   deleteUser,
+  hashPassword,
 } from "../queries/userQueries.js";
 import { createTokenFromSecret } from "../config/csrfConfig.js";
 import { emailFactory } from "../mailer/index.js";
@@ -223,6 +224,36 @@ export const userPasswordForgot = async (req, res) => {
   }
 };
 
-const userResetPassword = (req, res) => {
-  res.send("hello");
+export const userResetPassword = async (req, res) => {
+  let message;
+  try {
+    const { id, passwordToken } = req.params;
+    const { password } = req.body;
+    const user = await findUserById(id);
+    if (!user) {
+      message = "Impossible de modifier votre mot de passe";
+    } else if (
+      user.password_token !== passwordToken ||
+      Date.now() > user.password_token_expiration
+    ) {
+      message =
+        "le token fournit est invalide. Il est possible qu'il soit expiré.";
+    }
+
+    if (message) {
+      return res.status(404).json({ message });
+    }
+
+    user.password_token = null;
+    user.password_token_expiration = null;
+    user.password = await hashPassword(password);
+    await user.save();
+    message =
+      "Votre mot de passe à été modifié avec succès. Vous pouvez des à présent vous reconnecter avec votre nouveau mot de passe";
+    return res.json({ message });
+  } catch (error) {
+    console.error(error);
+    message = "Erreur lors de la réinitialisation du mot de passe.";
+    res.status(500).json({ message });
+  }
 };

@@ -76,10 +76,10 @@ export const findUserByEmail = (email, attributes) => {
  * @returns new user created with attribued role
  */
 export const createUser = async (user, role) => {
-  const hashPassword = await bcrypt.hash(user.password, 12);
+  const hashedPassword = await hashPassword(user.password);
   const newUser = await User.create({
     ...user,
-    password: hashPassword,
+    password: hashedPassword,
   });
   newUser.addRole(role);
   return newUser.save();
@@ -112,4 +112,8 @@ export const updateUser = (user, newData) => {
  */
 export const deleteUser = (id) => {
   return User.destroy({ where: { id } });
+};
+
+export const hashPassword = (pass) => {
+  return bcrypt.hash(pass, 12);
 };
