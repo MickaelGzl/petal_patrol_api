@@ -4,9 +4,12 @@ import {
   userSignIn,
   userSignOut,
 } from "../../controllers/userController.js";
+import { ensureIsAuthenticated } from "../../config/authConfig.js";
+import { createFormToken } from "../../controllers/authController.js";
 
 export const router = Router();
 
+router.get("/token", ensureIsAuthenticated, createFormToken);
 router.get("/signout", userSignOut);
 
 router.post("/signup", userCreate);

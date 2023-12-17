@@ -1,14 +1,20 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 import { connection } from "./src/db/server.js";
+import { createCsrfSecret } from "./src/config/csrfConfig.js";
 import {
   extractUserFromToken,
   addJwtFeatures,
 } from "./src/config/jwtConfig.js";
 import { router } from "./src/routes/index.js";
 
+dotenv.config();
+
 const app = express();
+
+process.env.CSRF_SECRET = createCsrfSecret();
 
 connection();
 
