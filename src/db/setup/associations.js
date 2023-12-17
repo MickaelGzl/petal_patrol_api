@@ -1,3 +1,7 @@
+/**
+ * take registered sequelize's models, and apply relations to each one
+ * @param {Sequelize} sequelize
+ */
 export function applyAssociations(sequelize) {
   const { user, role, plant, offer, proposal, comment, rapport } =
     sequelize.models;

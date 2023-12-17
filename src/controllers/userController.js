@@ -9,6 +9,11 @@ import {
   deleteUser,
 } from "../queries/userQueries.js";
 
+/**
+ * create an user when signup in application
+ * verify email is not already in use
+ * give to user USER role
+ */
 export const userCreate = async (req, res) => {
   let message;
   try {
@@ -28,6 +33,11 @@ export const userCreate = async (req, res) => {
   }
 };
 
+/**
+ * log user
+ * find user corresponding to email and compare the passwords in body and db
+ * user need to validate is email
+ */
 export const userSignIn = async (req, res) => {
   let message;
   try {
@@ -49,6 +59,12 @@ export const userSignIn = async (req, res) => {
       return res.status(404).json({ message });
     }
 
+    if (!user.validate_account) {
+      message =
+        "Vous devez confirmer votre email pour continuer sur l'application.";
+      return res.status(403).json({ message });
+    }
+
     req.login(user);
     message = "Connexion réussi.";
     return res.json({ message, user: { ...user.dataValues, password: "" } });
@@ -59,6 +75,10 @@ export const userSignIn = async (req, res) => {
   }
 };
 
+/**
+ * simple function to disconnect user. Just remove jwt cookie
+ * user logout function create earlier in addJwtFeature
+ */
 export const userSignOut = (req, res) => {
   let message;
   try {
@@ -72,6 +92,11 @@ export const userSignOut = (req, res) => {
   }
 };
 
+/**
+ * find all users, can search by name ( + role if user is admin)
+ * if receive role.query and user isn't admin, block request
+ * if user isn't admin, do not send role and validate_account
+ */
 export const userFindAll = async (req, res) => {
   let message;
   const isAdmin = req.user.role.includes("ADMIN");
@@ -100,6 +125,9 @@ export const userFindAll = async (req, res) => {
   }
 };
 
+/**
+ * find specific user by id
+ */
 export const userFindOne = async (req, res) => {
   let message;
   try {
@@ -117,6 +145,9 @@ export const userFindOne = async (req, res) => {
   }
 };
 
+/**
+ * find user by id and update him with new values send in request
+ */
 export const userUpdate = async (req, res) => {
   let message;
   try {
@@ -138,6 +169,9 @@ export const userUpdate = async (req, res) => {
   }
 };
 
+/**
+ * delete user corresponding to id sent in params
+ */
 export const userDelete = async (req, res) => {
   let message;
   try {

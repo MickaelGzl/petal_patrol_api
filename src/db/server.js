@@ -32,6 +32,11 @@ export const Rapport = RapportModel(sequelize, DataTypes);
 //apply associations with our models
 applyAssociations(sequelize);
 
+/**
+ * connect app to database
+ * force: true will delete everything in db
+ * then create test's datas
+ */
 export const connection = async () => {
   try {
     await sequelize.sync({ force: true });
