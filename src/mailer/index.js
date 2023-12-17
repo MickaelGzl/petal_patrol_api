@@ -14,12 +14,19 @@ class Email {
     this.from = "Petal Patrol <noreply@petal-patrol.fr>";
 
     if (process.env.NODE_ENV === "production") {
-      this.transporter = nodemailer.createTransport(
-        sparkPostTransporter({
-          sparkPostApiKey: "",
-          endPoint: "",
-        })
-      );
+      this.transporter = nodemailer.createTransport({
+        service: "gmail",
+        host: process.env.NODEMAILER_HOST,
+        port: process.env.NODEMAILER_PORT,
+        secure: true,
+        auth: {
+          user: process.env.NODEMAILER_USER,
+          pass: process.env.NODEMAILER_PASSWORD,
+        },
+        tls: {
+          rejectUnauthorized: process.env.TLS_REJECT,
+        },
+      });
     } else {
       this.transporter = nodemailer.createTransport({
         //configure a mail tester for dev version, to not degrade our reputation
