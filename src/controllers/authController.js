@@ -6,16 +6,23 @@ import {
 
 dotenv.config();
 
+/**
+ * create a csrf token with secret
+ */
 export const createFormToken = async (req, res) => {
   try {
     const token = createTokenFromSecret(process.env.CSRF_SECRET);
     return res.json({ token });
   } catch (error) {
-    console.error(error);
+    console.error("<authController: createFormToken>", error);
     res.status(500).json({ message: "Erreur lors de la création d'un token" });
   }
 };
 
+/**
+ * compare received token with secret
+ * block the request if token is empty or invalid
+ */
 export const verifyToken = async (req, res) => {
   let message;
   try {
@@ -26,7 +33,7 @@ export const verifyToken = async (req, res) => {
     }
     next();
   } catch (error) {
-    console.error(error);
+    console.error("<authController: verifyToken>", error);
     message = "Erreur lors de la vérification du token.";
     res.status(500).json({ message });
   }

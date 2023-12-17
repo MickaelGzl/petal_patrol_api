@@ -10,14 +10,15 @@ import {
 } from "./src/config/jwtConfig.js";
 import { router } from "./src/routes/index.js";
 
-import { join } from "path";
-import { fileURLToPath } from "url";
-
 dotenv.config();
 
 const app = express();
 
 //to have a view on template emails
+
+// import { join } from "path";
+// import { fileURLToPath } from "url";
+
 // app.set("view engine", "pug");
 // app.set(
 //   "views",
