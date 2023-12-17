@@ -199,7 +199,7 @@ export const userPasswordForgot = async (req, res) => {
       const message = "Aucun email transmis dans la requête";
       return res.status(404).json({ message });
     }
-    const user = await findUserByEmail(email);
+    const user = await findUserByEmail(email, ["id"]);
     if (!user) {
       return res.end();
     }
