@@ -8,6 +8,11 @@ export const router = Router();
 // * match with any routes
 
 router.use("/api", apiRoute);
+
+//to have a view on template emails
+// router.get("/test", (req, res) => {
+//   res.render("resetPasswordTemplate", { email: "toto", url: "tata" });
+// });
 router.use("*", (req, res) => {
   res.send("no route corresponding");
 });

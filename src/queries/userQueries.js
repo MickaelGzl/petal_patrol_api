@@ -11,7 +11,13 @@ export const findAllUser = (query) => {
   let options = {
     order: [["id", "DESC"]],
     attributes: {
-      exclude: ["googleId", "password_token", "activation_token", "password"],
+      exclude: [
+        "googleId",
+        "password_token",
+        "activation_token",
+        "password",
+        "password_token_expiration",
+      ],
     },
     include: [
       {

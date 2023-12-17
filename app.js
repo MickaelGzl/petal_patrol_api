@@ -10,9 +10,22 @@ import {
 } from "./src/config/jwtConfig.js";
 import { router } from "./src/routes/index.js";
 
+import { join } from "path";
+import { fileURLToPath } from "url";
+
 dotenv.config();
 
 const app = express();
+
+//to have a view on template emails
+// app.set("view engine", "pug");
+// app.set(
+//   "views",
+//   join(fileURLToPath(import.meta.url), "../src/mailer/templates")
+// );
+// app.use(
+//   express.static(join(fileURLToPath(import.meta.url), "../src/assets/images"))
+// );
 
 process.env.CSRF_SECRET = createCsrfSecret();
 
