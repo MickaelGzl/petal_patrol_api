@@ -30,6 +30,13 @@ export const userCreate = async (req, res) => {
     }
     const userRole = await findRoleByName("USER");
     const user = await createUser(req.body, userRole);
+
+    emailFactory.sendEmailVerificationLink({
+      to: email,
+      url: req.headers.origin,
+      token: user.activation_token,
+    });
+
     message = "L'utilisateur à bien été crée";
     res.json({ message, user });
   } catch (error) {

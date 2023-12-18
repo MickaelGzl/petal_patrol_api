@@ -20,6 +20,10 @@ export const OfferModel = (sequelize, DataTypes) => {
       coordinates: {
         type: DataTypes.JSON,
       },
+      allow_advices: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
       advice: {
         type: DataTypes.TEXT("long"),
       },

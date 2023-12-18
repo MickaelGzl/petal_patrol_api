@@ -9,6 +9,7 @@ dotenv.config();
 class Email {
   from;
   transporter;
+  mailerPath = join(fileURLToPath(import.meta.url), "../");
 
   constructor() {
     this.from = "Petal Patrol <noreply@petal-patrol.fr>";
@@ -41,14 +42,14 @@ class Email {
   }
 
   async sendResetPasswordLink(options) {
-    const mailerPath = join(fileURLToPath(import.meta.url), "../");
+    // const mailerPath = join(fileURLToPath(import.meta.url), "../");
     try {
       await this.transporter.sendMail({
         from: this.from,
         to: options.to,
         subject: "Réinitialisation de votre mot de passe.",
         html: pug.renderFile(
-          join(mailerPath, "/templates/resetPasswordTemplate.pug"),
+          join(this.mailerPath, "/templates/resetPasswordTemplate.pug"),
           {
             email: options.to,
             url: `${options.url}/user/reset-password/${options.userId}/${options.token}/${options.serverToken}`,
@@ -57,7 +58,10 @@ class Email {
         attachments: [
           {
             filename: "grainou.png",
-            path: join(mailerPath, "../assets/images/grainou_la_graine.png"),
+            path: join(
+              this.mailerPath,
+              "../assets/images/grainou_la_graine.png"
+            ),
             cid: "unique@cid.ee",
           },
         ],
@@ -68,7 +72,35 @@ class Email {
     }
   }
 
-  async sendEmailVerificationLink(options) {}
+  async sendEmailVerificationLink(options) {
+    try {
+      await this.transporter.sendMail({
+        from: this.from,
+        to: options.to,
+        subject: "Vérification de votre adresse email.",
+        html: pug.renderFile(
+          join(this.mailerPath, "/templates/validateEmailTemplate.pug"),
+          {
+            email: options.to,
+            url: `${options.url}/auth/${options.token}`,
+          }
+        ),
+        attachments: [
+          {
+            filename: "grainou.png",
+            path: join(
+              this.mailerPath,
+              "../assets/images/grainou_la_graine.png"
+            ),
+            cid: "unique@cid.ee",
+          },
+        ],
+      });
+      console.log("an email was sent for email vérification");
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const emailFactory = new Email();

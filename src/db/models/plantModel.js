@@ -6,6 +6,9 @@ export const PlantModel = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      type: {
+        type: DataTypes.STRING,
+      },
       image: {
         type: DataTypes.STRING,
         allowNull: false,

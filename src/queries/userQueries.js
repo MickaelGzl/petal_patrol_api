@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from "uuid";
 import { User, Role } from "../db/server.js";
 import { Op } from "sequelize";
 
@@ -70,7 +71,7 @@ export const findUserByEmail = (email, attributes) => {
 };
 
 /**
- * create an user, and give him USER role
+ * create an user, give him USER role, activation token
  * @param {User} user
  * @param {Role} role
  * @returns new user created with attribued role
@@ -82,6 +83,7 @@ export const createUser = async (user, role) => {
     password: hashedPassword,
   });
   newUser.addRole(role);
+  newUser.activation_token = uuidv4();
   return newUser.save();
 };
 
