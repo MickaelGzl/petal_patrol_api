@@ -21,7 +21,12 @@ export const findRoleByName = (role) => {
 export const findRoleByUserId = async (userId) => {
   return Role.findAll({
     include: [
-      { model: User, through: { attributes: [] }, where: { id: userId } },
+      {
+        model: User,
+        through: { attributes: [] },
+        attributes: [],
+        where: { id: userId },
+      },
     ],
     attributes: ["role"],
   });

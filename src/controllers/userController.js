@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
-import { findRoleByName } from "../queries/roleQueries.js";
+import { findRoleByName, findRoleByUserId } from "../queries/roleQueries.js";
 import {
   createUser,
   findUserByEmail,
@@ -32,11 +32,11 @@ export const userCreate = async (req, res) => {
     const userRole = await findRoleByName("USER");
     const user = await createUser(req.body, userRole);
 
-    emailFactory.sendEmailVerificationLink({
-      to: email,
-      url: req.headers.origin,
-      token: user.activation_token,
-    });
+    // emailFactory.sendEmailVerificationLink({
+    //   to: req.body.email,
+    //   url: req.headers.origin,
+    //   token: user.activation_token,
+    // });
 
     message = "L'utilisateur à bien été crée";
     res.json({ message, user });
@@ -78,10 +78,13 @@ export const userSignIn = async (req, res) => {
         "Vous devez confirmer votre email pour continuer sur l'application.";
       return res.status(403).json({ message });
     }
-
+    const userRoles = await findRoleByUserId(user.id);
     req.login(user);
     message = "Connexion réussi.";
-    return res.json({ message, user: { ...user.dataValues, password: "" } });
+    return res.json({
+      message,
+      user: { ...user.dataValues, password: "", roles: userRoles },
+    });
   } catch (error) {
     console.error("<userController: userSignIn>", error);
     message = "Erreur lors de la connexion de l'utilisateur.";
