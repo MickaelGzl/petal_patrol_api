@@ -9,6 +9,7 @@ export const users = [
   {
     email: "toto@gmail.com",
     name: "tonton google",
+    password: "toto",
     googleId: "123",
     role: ["USER"],
     validate_account: true,

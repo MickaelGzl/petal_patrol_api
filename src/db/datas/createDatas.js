@@ -1,5 +1,6 @@
 import { Plant, Role, User } from "../server.js";
 import { users, roles, plants } from "./mock.js";
+import { hashSync } from "bcrypt";
 
 export const createData = async () => {
   const allRoles = await Promise.all(
@@ -11,7 +12,9 @@ export const createData = async () => {
 
   await Promise.all(
     users.map(async (user) => {
-      const newUser = await User.create({ ...user });
+      const hashedPassword = hashSync(user.password, 12);
+      console.log(hashedPassword);
+      const newUser = await User.create({ ...user, password: hashedPassword });
       user.role.map((role) => {
         const sameRole = allRoles.find((dbRole) => dbRole.role === role);
         newUser.addRole(sameRole);
