@@ -14,6 +14,10 @@ export const router = Router();
 
 router.get("/token", ensureIsAuthenticated, createFormToken);
 router.get("/signout", userSignOut);
+router /
+  get("/:token", (req, res) =>
+    res.send("verificate and pass validate account to true")
+  );
 
 router.post("/signup", userCreate);
 router.post("/signin", userSignIn);
@@ -25,3 +29,5 @@ router.post("verify-server-token", verifyToken, (req, res) =>
 router.post("is-authenticated", ensureIsAuthenticated, (req, res) =>
   res.json({ message: "already logged in." })
 );
+
+//route for validate account

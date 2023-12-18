@@ -46,3 +46,5 @@ export const connection = async () => {
     console.error("Db connection error: ", error);
   }
 };
+
+//req.origin = process.env.admin_route && !user.role.includes('ADMIN)
