@@ -32,11 +32,11 @@ export const userCreate = async (req, res) => {
     const userRole = await findRoleByName("USER");
     const user = await createUser(req.body, userRole);
 
-    emailFactory.sendEmailVerificationLink({
-      to: email,
-      url: req.headers.origin,
-      token: user.activation_token,
-    });
+    // emailFactory.sendEmailVerificationLink({
+    //   to: req.body.email,
+    //   url: req.headers.origin,
+    //   token: user.activation_token,
+    // });
 
     message = "L'utilisateur à bien été crée";
     res.json({ message, user });
@@ -205,10 +205,17 @@ export const userUpdate = async (req, res) => {
 
 /**
  * delete user corresponding to id sent in params
+ * set deleted to true, let one month to restore account
+ * then just delete the user
  */
 export const userDelete = async (req, res) => {
   let message;
   try {
+    const user = findUserById(req.params.id);
+    if (!user) {
+      message = "Aucun utilisateur trouvé pour l'identifiant fourni.";
+      return res.status(404).json({ message });
+    }
     await deleteUser(req.params.id);
     message = `L'utilisateur ${req.params.id} à bien été supprimé.`;
     res.json({ message });
