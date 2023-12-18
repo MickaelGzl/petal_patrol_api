@@ -83,7 +83,6 @@ export const createUser = async (user, role) => {
     password: hashedPassword,
   });
   newUser.addRole(role);
-  newUser.activation_token = uuidv4();
   return newUser.save();
 };
 
@@ -97,6 +96,12 @@ export const comparePasswords = (password, hashedPassword) => {
   return bcrypt.compare(password, hashedPassword);
 };
 
+/**
+ *
+ */
+export const findUserByToken = (token) => {
+  return User.find({ activation_token: { [Op.eq]: token } });
+};
 /**
  * take request and update the user
  * @param {User} user

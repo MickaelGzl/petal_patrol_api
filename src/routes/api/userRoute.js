@@ -15,6 +15,9 @@ import {
 export const router = Router();
 
 router.get("/", ensureIsAuthenticated, userFindAll);
+router.get("/validate/:token", (req, res) =>
+  res.send("verificate and pass validate account to true")
+);
 router.get("/:id", ensureIsAuthenticated, userFindOne);
 
 router.post("/reset-password", userPasswordForgot);

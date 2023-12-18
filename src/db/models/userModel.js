@@ -1,3 +1,5 @@
+import { UUIDV4 } from "sequelize";
+
 export const UserModel = (sequelize, DataTypes) => {
   return sequelize.define(
     "user",
@@ -36,6 +38,7 @@ export const UserModel = (sequelize, DataTypes) => {
       },
       activation_token: {
         type: DataTypes.STRING,
+        defaultValue: UUIDV4(),
       },
       validate_account: {
         type: DataTypes.BOOLEAN,

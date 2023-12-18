@@ -10,6 +10,7 @@ import {
   updateUser,
   deleteUser,
   hashPassword,
+  findUserByToken,
 } from "../queries/userQueries.js";
 import { createTokenFromSecret } from "../config/csrfConfig.js";
 import { emailFactory } from "../mailer/index.js";
@@ -101,6 +102,26 @@ export const userSignOut = (req, res) => {
   } catch (error) {
     console.error("<userController: userSignOut>", error);
     message = "Erreur lors de la déconnexion de l'utilisateur.";
+    res.status(500).json({ message });
+  }
+};
+
+export const userValidateEmail = async (req, res) => {
+  let message;
+  try {
+    const user = await findUserByToken(req.params.token);
+    if (!user) {
+      message = "Aucun utilisateur pour l'identifiant fournis.";
+      return res.status(404).json({ message });
+    }
+    user.validate_account = true;
+    user.activation_token = "";
+    await user.save();
+    message = "Le compte est désormais valide.";
+    return res.json({ message });
+  } catch (error) {
+    console.error("<userController: userValidateEmail>", error);
+    message = "Erreur lors de la validation de l'email de l'utilisateurs.";
     res.status(500).json({ message });
   }
 };
