@@ -78,7 +78,9 @@ export const userSignIn = async (req, res) => {
         "Vous devez confirmer votre email pour continuer sur l'application.";
       return res.status(403).json({ message });
     }
-    const userRoles = await findRoleByUserId(user.id);
+    const userRoles = (await findRoleByUserId(user.id)).map(
+      (role) => role.role
+    );
     req.login(user);
     message = "Connexion réussi.";
     return res.json({
