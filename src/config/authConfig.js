@@ -26,3 +26,16 @@ export const ensureUserHaveRights = (req, res, next) => {
     });
   }
 };
+
+export const verifyUserCanMakeAction = (object, user) => {
+  if (!object) {
+    return {
+      status: 404,
+      message: "Aucune donnée trouvée pour l'identifiant fourni.",
+    };
+  } else if (object.userId !== user.id || user.role.includes("ADMIN")) {
+    return { status: 403, message: "Vous n'avez pas les droits" };
+  } else {
+    return null;
+  }
+};
