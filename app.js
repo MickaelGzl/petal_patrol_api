@@ -35,7 +35,7 @@ connection();
 app
   .use(
     cors({
-      origin: ["http://localhost:5173"],
+      origin: ["http://localhost:5173", "http://localhost:3000"],
       credentials: true,
     })
   )
@@ -46,4 +46,4 @@ app
   .use(addJwtFeatures)
   .use(router);
 
-app.listen(3000, () => console.log("app listen on port 3000"));
+app.listen(process.env.PORT, () => console.log("app listen on port 3000"));

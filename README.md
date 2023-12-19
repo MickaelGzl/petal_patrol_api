@@ -5,6 +5,7 @@ create .env file at the root of the project, and with this keys:
 ```
 DATABASE_PATH=src/db/database/
 DB_NAME=sequelize.sqlite
+PORT=3000
 
 JWT_SECRET_KEY=
 NODEMAILER_HOST=
