@@ -37,6 +37,9 @@ export const roles = [
   {
     role: "ADMIN",
   },
+  {
+    role: "BOTANIST",
+  },
 ];
 
 export const plants = [

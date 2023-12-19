@@ -81,6 +81,7 @@ export const createUser = async (user, role) => {
   const newUser = await User.create({
     ...user,
     password: hashedPassword,
+    validate_account: true, //TODO: remove this before prod
   });
   newUser.addRole(role);
   return newUser.save();
@@ -128,4 +129,11 @@ export const deleteUser = (id) => {
  */
 export const hashPassword = (pass) => {
   return bcrypt.hash(pass, 12);
+};
+
+export const updateBotanistUser = async (id) => {
+  const botanist = await findUserById(id);
+  botanist.validate_account = true;
+  botanist.activation_token = "";
+  return botanist.save();
 };

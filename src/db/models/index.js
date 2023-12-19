@@ -5,3 +5,4 @@ export * from "./proposalModel.js";
 export * from "./rapportModel.js";
 export * from "./roleModel.js";
 export * from "./userModel.js";
+export * from "./waitingBotanistModel.js";

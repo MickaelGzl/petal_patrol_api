@@ -3,8 +3,17 @@
  * @param {Sequelize} sequelize
  */
 export function applyAssociations(sequelize) {
-  const { user, role, plant, offer, proposal, comment, rapport } =
-    sequelize.models;
+  // console.log(sequelize.models);
+  const {
+    user,
+    role,
+    plant,
+    offer,
+    proposal,
+    comment,
+    rapport,
+    waitingBotanist,
+  } = sequelize.models;
 
   //User associations
   user.belongsToMany(role, { through: "userRole" });
@@ -21,6 +30,10 @@ export function applyAssociations(sequelize) {
       name: "guardianId",
     },
   });
+  user.hasOne(waitingBotanist);
+
+  //WaitingList associations
+  waitingBotanist.belongsTo(user);
 
   //Role associations
   role.belongsToMany(user, { through: "userRole" });

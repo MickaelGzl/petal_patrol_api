@@ -8,6 +8,7 @@ import {
   CommentModel,
   ProposalModel,
   RapportModel,
+  WaitingBotanistModel,
 } from "./models/index.js";
 import { applyAssociations } from "./setup/associations.js";
 import { createData } from "./datas/createDatas.js";
@@ -28,6 +29,7 @@ export const Offer = OfferModel(sequelize, DataTypes);
 export const Comment = CommentModel(sequelize, DataTypes);
 export const Proposal = ProposalModel(sequelize, DataTypes);
 export const Rapport = RapportModel(sequelize, DataTypes);
+export const waitingBotanist = WaitingBotanistModel(sequelize, DataTypes);
 
 //apply associations with our models
 applyAssociations(sequelize);
@@ -48,6 +50,6 @@ export const connection = async () => {
 };
 
 //req.origin = process.env.admin_route && !user.role.includes('ADMIN)
-//route for botanist register
+//route for botanist register, admin have a waiting list, and can valide
 //validate_account made by admin, receive list
 //only name, email and password in createUser

@@ -14,6 +14,7 @@ import {
 } from "../queries/userQueries.js";
 import { createTokenFromSecret } from "../config/csrfConfig.js";
 import { emailFactory } from "../mailer/index.js";
+import { createWaitingBotanist } from "../queries/waitingBotanistQueries.js";
 
 dotenv.config();
 /**
@@ -24,21 +25,29 @@ dotenv.config();
 export const userCreate = async (req, res) => {
   let message;
   try {
-    const emailAlreadyInUse = await findUserByEmail(req.body.email, ["email"]);
+    const { name, email, password, isBotanist } = req.body;
+    const emailAlreadyInUse = await findUserByEmail(email, ["email"]);
     if (emailAlreadyInUse) {
       message = "Cet email est déjà utilisé.";
       return res.status(409).json({ message });
     }
-    const userRole = await findRoleByName("USER");
-    const user = await createUser(req.body, userRole);
+    const userRole = await findRoleByName(isBotanist ? "BOTANIST" : "USER");
+    const user = await createUser({ email, password, name }, userRole);
 
-    // emailFactory.sendEmailVerificationLink({
-    //   to: req.body.email,
-    //   url: req.headers.origin,
-    //   token: user.activation_token,
-    // });
+    if (isBotanist) {
+      await createWaitingBotanist(user.id, req.body.message);
+      message =
+        "Enregistré avec succès. En attente de validation de l'administrateur";
+    } else {
+      // emailFactory.sendEmailVerificationLink({
+      //   to: req.body.email,
+      //   url: req.headers.origin,
+      //   token: user.activation_token,
+      // });
+      message =
+        "Enregistré avec succès. Veuillez vérifier vos mails afin de valider votre compte avant de vous connecter.";
+    }
 
-    message = "L'utilisateur à bien été crée";
     res.json({ message, user });
   } catch (error) {
     console.error("<userController: userCreate>", error);

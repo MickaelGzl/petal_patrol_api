@@ -44,6 +44,9 @@ export const UserModel = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      siret: {
+        type: DataTypes.STRING,
+      },
       deleted: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
