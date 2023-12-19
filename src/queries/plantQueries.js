@@ -60,3 +60,17 @@ export const findAllPlants = (list, query) => {
 export const findPlantById = (id) => {
   return Plant.findByPk(id);
 };
+
+export const createPlant = async (plant, userId) => {
+  const newPlant = await Plant.create({ ...plant });
+  newPlant.setUser(userId);
+  return newPlant.save();
+};
+
+export const updatePlant = (plant, newValues) => {
+  return plant.update(newValues);
+};
+
+export const deletePlant = (id) => {
+  return Plant.destroy({ where: { id } });
+};

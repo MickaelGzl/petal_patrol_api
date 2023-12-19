@@ -1,4 +1,12 @@
-import { findAllPlants, findPlantById } from "../queries/plantQueries.js";
+import { verifyUserCanMakeAction } from "../config/authConfig.js";
+import {
+  createPlant,
+  deletePlant,
+  findAllPlants,
+  findPlantById,
+  updatePlant,
+} from "../queries/plantQueries.js";
+import { findOfferByPlantId } from "./offerController.js";
 
 /**
  * return all plants registered in app
@@ -65,10 +73,58 @@ export const plantById = async (req, res) => {
 export const plantCreate = async (req, res) => {
   let message;
   try {
-    const plant = await createPlant(req.body);
+    const plant = await createPlant(req.body, req.user.id);
+    message = "Une nouvelle plante à bien été crée.";
+    return res.json({ plant });
   } catch (error) {
     console.error("<plantController: plantCreate>", error);
     message = "Erreur lors de la création de la plante";
+    res.status(500).json({ message });
+  }
+};
+
+export const plantUpdate = async (req, res) => {
+  let message;
+  try {
+    const plantToUpdate = await findPlantById(req.params.id);
+    const cancel = verifyUserCanMakeAction(plantToUpdate, req.user);
+    if (cancel) {
+      message = cancel.message;
+      return res.status(cancel.status).json({ message });
+    }
+    const updatedPlant = await updatePlant(plantToUpdate, req.body);
+    message = "La plante à correctement été msie à jour.";
+    res.json({ message, plant: updatedPlant });
+  } catch (error) {
+    console.error("<plantController: plantUpdate>", error);
+    message = "Erreur lors de l'actualisation de la plante";
+    res.status(500).json({ message });
+  }
+};
+
+export const plantDelete = async (req, res) => {
+  let message;
+  try {
+    const plantToDelete = await findPlantById(req.params.id);
+    const cancel = verifyUserCanMakeAction(plantToDelete, req.user);
+    if (cancel) {
+      message = cancel.message;
+      return res.status(cancel.status).json({ message });
+    }
+    const activeOffersWithThisPlant = await findOfferByPlantId(
+      plantToDelete.id
+    );
+    if (activeOffersWithThisPlant) {
+      message =
+        "Vous ne pouvez supprimer cette plante car il y à des offres en cours la concernant.";
+      return res.status(409).json({ message });
+    }
+    await deletePlant(req.params.id);
+    message = "La plante à bien été supprimé.";
+    res.json({ message });
+  } catch (error) {
+    console.error("<plantController: plantDelete>", error);
+    message = "Erreur lors de la suppression de la plante";
     res.status(500).json({ message });
   }
 };

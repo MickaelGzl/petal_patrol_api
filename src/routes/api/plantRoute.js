@@ -7,7 +7,9 @@ import {
   plantById,
   plantByUser,
   plantCreate,
+  plantDelete,
   plantFindAll,
+  plantUpdate,
 } from "../../controllers/plantController.js";
 
 export const router = Router();
@@ -18,8 +20,6 @@ router.get("/:id", ensureIsAuthenticated, plantById);
 
 router.post("/", ensureIsAuthenticated, plantCreate);
 
-router.put("/:id", (req, res) =>
-  res.send("update plant by id. verify userId === req.user.id")
-);
+router.put("/:id", ensureIsAuthenticated, plantUpdate);
 
-router.delete("/id", (req, res) => res.send("delete plant"));
+router.delete("/:id", ensureIsAuthenticated, plantDelete);

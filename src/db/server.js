@@ -50,3 +50,4 @@ export const connection = async () => {
 //req.origin = process.env.admin_route && !user.role.includes('ADMIN)
 //route for botanist register
 //validate_account made by admin, receive list
+//only name, email and password in createUser
