@@ -48,8 +48,3 @@ export const connection = async () => {
     console.error("Db connection error: ", error);
   }
 };
-
-//req.origin = process.env.admin_route && !user.role.includes('ADMIN)
-//route for botanist register, admin have a waiting list, and can valide
-//validate_account made by admin, receive list
-//only name, email and password in createUser

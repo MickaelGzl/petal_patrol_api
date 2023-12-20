@@ -30,7 +30,7 @@ export const findAllUser = (query) => {
   };
 
   if (query && query.role) {
-    options.include[0].where = { role: { [Op.eq]: query.role.toUppercase() } };
+    options.include[0].where = { role: { [Op.eq]: query.role.toUpperCase() } };
   }
 
   if (query && query.search) {
@@ -53,7 +53,10 @@ export const findAllUser = (query) => {
  * @param {number} id
  * @returns user corresponding to param id
  */
-export const findUserById = (id) => {
+export const findUserById = (id, attributes) => {
+  if (attributes) {
+    return User.findOne({ where: { id: { [Op.eq]: id } }, attributes });
+  }
   return User.findByPk(id);
 };
 

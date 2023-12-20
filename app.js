@@ -49,3 +49,8 @@ app
 app.listen(process.env.PORT, () =>
   console.log(`app listen on port ${process.env.PORT}`)
 );
+
+//route to update avatar
+//route to set deleted to true, and set deleted to false if user return
+//time to thrully delete user account
+//pass validate_account to true when an user validate his email

@@ -58,7 +58,7 @@ export const plantById = async (req, res) => {
       plant.userId !== req.user.id ||
       !req.user.role.includes("ADMIN")
     ) {
-      message = "Vous n'avez pas els droits d'accès à cette ressource.";
+      message = "Vous n'avez pas les droits d'accès à cette ressource.";
       return res.status(403).json({ message });
     }
     message = "La plante correspondante à bien été récupérée.";

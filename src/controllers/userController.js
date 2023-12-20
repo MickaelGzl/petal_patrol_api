@@ -48,7 +48,10 @@ export const userCreate = async (req, res) => {
         "Enregistré avec succès. Veuillez vérifier vos mails afin de valider votre compte avant de vous connecter.";
     }
 
-    res.json({ message, user });
+    res.json({
+      message,
+      user: { id: user.id, name: user.name, email: user.email },
+    });
   } catch (error) {
     console.error("<userController: userCreate>", error);
     message = "Erreur lors de la création de l'utilisateur.";
@@ -71,6 +74,7 @@ export const userSignIn = async (req, res) => {
       "email",
       "password",
       "validate_account",
+      "avatar",
     ]);
     if (!user) {
       message = "Identifiant ou mot de passe incorrect.";
@@ -158,11 +162,18 @@ export const userFindAll = async (req, res) => {
 
     res.json({
       message,
-      allUsers: isAdmin
-        ? allUsers
+      users: isAdmin
+        ? allUsers.map(({ dataValues }) => {
+            return {
+              ...dataValues,
+              roles: dataValues.roles.map((role) => role.role),
+            };
+          })
         : allUsers.map(({ dataValues }) => {
             delete dataValues.roles;
             delete dataValues.validate_account;
+            delete dataValues.siret;
+            delete dataValues.deleted;
             return dataValues;
           }),
     });
@@ -179,12 +190,23 @@ export const userFindAll = async (req, res) => {
 export const userFindOne = async (req, res) => {
   let message;
   try {
-    const user = await findUserById(req.params.id);
+    const isAdmin = req.user.role.includes("ADMIN");
+    let attributes = ["id", "name", "email", "avatar", "siret"];
+    if (isAdmin) {
+      attributes = [...attributes, "validate_account", "deleted"];
+    }
+    let user = await findUserById(req.params.id, attributes);
     if (!user) {
       message = "Aucun utilisateur correspondant à l'identifiant fourni.";
       return res.status(404).json({ message, id: req.params.id });
     }
-    message = `L'utilisateur ${id} à bien été récupéré.`;
+    if (isAdmin) {
+      const userRoles = (await findRoleByUserId(user.id)).map(
+        (role) => role.role
+      );
+      user = { ...user.dataValues, roles: userRoles };
+    }
+    message = `Un utilisateur à bien été récupéré.`;
     res.json({ message, user });
   } catch (error) {
     console.error("<userController: userFindOne>", error);
@@ -208,7 +230,11 @@ export const userUpdate = async (req, res) => {
     message = "Mise à jour de l'utilisateur réussi.";
     res.json({
       message,
-      user: { name: updatedUser.name, email: updatedUser.email },
+      user: {
+        name: updatedUser.name,
+        email: updatedUser.email,
+        avatar: user.avatar,
+      },
     });
   } catch (error) {
     console.error("<userController: userUpdate>", error);
@@ -230,7 +256,8 @@ export const userDelete = async (req, res) => {
       message = "Aucun utilisateur trouvé pour l'identifiant fourni.";
       return res.status(404).json({ message });
     }
-    await deleteUser(req.params.id);
+    user.deleted = true;
+    await user.save();
     message = `L'utilisateur ${req.params.id} à bien été supprimé.`;
     res.json({ message });
   } catch (error) {
