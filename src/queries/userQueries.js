@@ -134,6 +134,12 @@ export const hashPassword = (pass) => {
   return bcrypt.hash(pass, 12);
 };
 
+export const updateAvatar = async (id, filename) => {
+  const user = await User.findByPk(id);
+  user.avatar = filename;
+  return user.save();
+};
+
 export const updateBotanistUser = async (id) => {
   const botanist = await findUserById(id);
   botanist.validate_account = true;

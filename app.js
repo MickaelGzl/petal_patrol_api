@@ -1,7 +1,10 @@
 import express from "express";
 import cors from "cors";
+import { rateLimit } from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import { join } from "path";
+import { fileURLToPath } from "url";
 import { connection } from "./src/db/server.js";
 import { createCsrfSecret } from "./src/config/csrfConfig.js";
 import {
@@ -16,9 +19,6 @@ const app = express();
 
 //to have a view on template emails
 
-// import { join } from "path";
-// import { fileURLToPath } from "url";
-
 // app.set("view engine", "pug");
 // app.set(
 //   "views",
@@ -32,6 +32,14 @@ process.env.CSRF_SECRET = createCsrfSecret();
 
 connection();
 
+//create a window of 10min. each ip have the right to make 100 request during this window
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app
   .use(
     cors({
@@ -39,11 +47,18 @@ app
       credentials: true,
     })
   )
+  .use(limiter)
   .use(express.json())
   .use(express.urlencoded({ extended: false }))
   .use(cookieParser())
   .use(extractUserFromToken)
   .use(addJwtFeatures)
+  .use(
+    "/image",
+    express.static(
+      join(fileURLToPath(import.meta.url), "../public/assets/images")
+    )
+  )
   .use(router);
 
 app.listen(process.env.PORT, () =>

@@ -34,7 +34,7 @@ export const plantByUser = async (req, res) => {
   try {
     const allPlants = await findAllPlants("user", req.user.id);
     message = "La liste des plantes de l'utilisateur à bien été récupérée.";
-    res.json({ message, allPlants });
+    res.json({ message, plants: allPlants });
   } catch (error) {
     console.error("<plantController: plantByUser>", error);
     message =
@@ -92,8 +92,9 @@ export const plantUpdate = async (req, res) => {
       message = cancel.message;
       return res.status(cancel.status).json({ message });
     }
-    const updatedPlant = await updatePlant(plantToUpdate, req.body);
-    message = "La plante à correctement été msie à jour.";
+    const { name, type } = req.body;
+    const updatedPlant = await updatePlant(plantToUpdate, { name, type });
+    message = "La plante à correctement été mise à jour.";
     res.json({ message, plant: updatedPlant });
   } catch (error) {
     console.error("<plantController: plantUpdate>", error);

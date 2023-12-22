@@ -7,8 +7,18 @@ import { fileURLToPath } from "url";
  * verify if the folder that will contain the db exist
  * if not, create it to prevent app crash
  */
+const pathToSrc = join(fileURLToPath(import.meta.url), "../src");
+const folderPaths = [
+  join(pathToSrc, "/db/database"),
+  join(pathToSrc, "../public/assets/users"),
+  join(pathToSrc, "../public/assets/plants"),
+];
 
-const pathToFolder = join(fileURLToPath(import.meta.url), "../src/db/database");
-if (!existsSync(pathToFolder)) {
-  mkdirSync(pathToFolder);
-}
+// const pathToFolder = join(fileURLToPath(import.meta.url), "../src/db/database");
+
+folderPaths.forEach((path) => {
+  if (!existsSync(path)) {
+    console.log(`create path ${path}`);
+    mkdirSync(path);
+  }
+});

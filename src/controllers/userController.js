@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
+import { unlink } from "fs";
 import dotenv from "dotenv";
+import { fileUploadConfig } from "../config/multerConfig.js";
 import { findRoleByName, findRoleByUserId } from "../queries/roleQueries.js";
 import {
   createUser,
@@ -11,12 +13,16 @@ import {
   deleteUser,
   hashPassword,
   findUserByToken,
+  updateAvatar,
 } from "../queries/userQueries.js";
 import { createTokenFromSecret } from "../config/csrfConfig.js";
 import { emailFactory } from "../mailer/index.js";
 import { createWaitingBotanist } from "../queries/waitingBotanistQueries.js";
+import { join } from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
+const upload = fileUploadConfig("users");
 /**
  * create an user when signup in application
  * verify email is not already in use
@@ -226,14 +232,14 @@ export const userUpdate = async (req, res) => {
       message = "Aucun utilisateur correspondant à l'identifiant fourni.";
       return res.status(404).json({ message, id: req.params.id });
     }
-    const updatedUser = await updateUser(user, req.body);
+    const { name, email } = req.body;
+    const updatedUser = await updateUser(user, { name, email });
     message = "Mise à jour de l'utilisateur réussi.";
     res.json({
       message,
       user: {
         name: updatedUser.name,
         email: updatedUser.email,
-        avatar: user.avatar,
       },
     });
   } catch (error) {
@@ -251,14 +257,14 @@ export const userUpdate = async (req, res) => {
 export const userDelete = async (req, res) => {
   let message;
   try {
-    const user = findUserById(req.params.id);
+    const user = await findUserById(req.params.id);
     if (!user) {
       message = "Aucun utilisateur trouvé pour l'identifiant fourni.";
       return res.status(404).json({ message });
     }
     user.deleted = true;
     await user.save();
-    message = `L'utilisateur ${req.params.id} à bien été supprimé.`;
+    message = `L'utilisateur ${req.params.id} à été suspendu. Sans aucune autre activité, il sera supprimé dans 30 jours .`;
     res.json({ message });
   } catch (error) {
     console.error("<userController: userDelete>", error);
@@ -333,3 +339,47 @@ export const userResetPassword = async (req, res) => {
     res.status(500).json({ message });
   }
 };
+
+export const userUpdateAvatar = [
+  async (req, res, next) => {
+    let message;
+    try {
+      upload.single("avatar")(req, res, (err) => {
+        if (err && err.code === "LIMIT_FILE_SIZE") {
+          ("Le fichier est trop volumineux. La taille maximate autorisée est de 500Mb.");
+          return res.status(400).json({ error: err, message });
+        } else if (err && err.message === "type not allowed") {
+          message = "Le type de fichier envoyé est invalide.";
+          return res.status(500).json({ error: err, message });
+        } else if (err) {
+          throw new Error(err);
+        }
+        next();
+      });
+    } catch (error) {
+      console.log("<userController: userUpdateAvatar>", error);
+      message = "Une erreur est survenue lors du traitement du fichier";
+      return res.status(500).json({ message });
+    }
+  },
+  async (req, res) => {
+    try {
+      const { id, avatar: previousAvatar } = req.user;
+      const filename = req.file.filename;
+      await updateAvatar(id, filename);
+      unlink(
+        join(fileURLToPath(import.meta.url), `../../public/assets/users`),
+        (err) => {
+          if (err) throw err;
+        }
+      );
+      message = "Avatar modifié avec succés.";
+      res.json({ message, filename });
+    } catch (error) {
+      console.log("<userController: userUpdateAvatar>", error);
+      message =
+        "Une erreur est survenue lors de l'actualisation de l'avatar de l'utilisateur";
+      return res.status(500).json({ message });
+    }
+  },
+];

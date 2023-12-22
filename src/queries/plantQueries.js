@@ -8,7 +8,6 @@ import { Plant } from "../db/server.js";
  * @returns array of Plants corresponding to research
  */
 export const findAllPlants = (list, query) => {
-  console.log("query");
   let options = {
     order: [["id", "DESC"]],
   };
@@ -43,11 +42,8 @@ export const findAllPlants = (list, query) => {
       options.include[0].where = { name: { [Op.like]: `%${query.user}%` } };
     }
   } else if (list === "user") {
-    console.log("user");
     options = { ...options, where: { userId: query } };
   }
-
-  console.log("plant");
 
   return Plant.findAll(options);
 };
