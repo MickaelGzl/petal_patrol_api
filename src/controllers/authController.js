@@ -27,7 +27,7 @@ export const verifyToken = async (req, res) => {
   let message;
   try {
     const token = req.body.csrfToken;
-    if (!token || !validateTokenWithSecret(process.env.CSRF_SECRET)) {
+    if (!token || !validateTokenWithSecret(process.env.CSRF_SECRET, token)) {
       message = "Token invalide.";
       return res.status(401).json({ message });
     }

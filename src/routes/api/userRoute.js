@@ -5,24 +5,30 @@ import {
 } from "../../config/authConfig.js";
 import {
   userDelete,
+  userDeleteAvatar,
   userFindAll,
   userFindOne,
   userPasswordForgot,
   userResetPassword,
-  userUpdate,
+  userUpdateEmail,
+  userUpdateAvatar,
+  userUpdateName,
+  userValidateEmail,
 } from "../../controllers/userController.js";
 
 export const router = Router();
 
-router.get("/", ensureIsAuthenticated, userFindAll);
-router.get("/validate/:token", (req, res) =>
-  res.send("verificate and pass validate account to true")
-);
+router.get("/", ensureIsAuthenticated, ensureUserHaveRights, userFindAll);
+router.get("/validate/:token/:serverToken", userValidateEmail);
 router.get("/:id", ensureIsAuthenticated, userFindOne);
 
 router.post("/reset-password", userPasswordForgot);
 router.post("/reset-password/:id/:passwordToken", userResetPassword);
 
-router.put("/:id", ensureIsAuthenticated, ensureUserHaveRights, userUpdate);
+router.put("/avatar", ensureIsAuthenticated, userUpdateAvatar);
+router.put("/email", ensureIsAuthenticated, userUpdateEmail);
+router.put("/:id", ensureIsAuthenticated, ensureUserHaveRights, userUpdateName);
 
-router.delete("/:id", ensureIsAuthenticated, ensureUserHaveRights, userDelete);
+router.delete("/", ensureIsAuthenticated, userDelete);
+
+router.delete("/:id/avatar", ensureIsAuthenticated, ensureUserHaveRights, userDeleteAvatar);

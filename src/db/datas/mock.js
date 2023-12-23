@@ -45,7 +45,7 @@ export const roles = [
 export const plants = [
   {
     name: "racine",
-    image: "uneUrlDImage",
+    images: JSON.stringify(["uneUrl.jpg", "imagename2.png", "file3.jfif"]),
     user: 1,
   },
 ];

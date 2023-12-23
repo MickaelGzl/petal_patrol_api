@@ -8,7 +8,6 @@ import { Plant } from "../db/server.js";
  * @returns array of Plants corresponding to research
  */
 export const findAllPlants = (list, query) => {
-  console.log("query");
   let options = {
     order: [["id", "DESC"]],
   };
@@ -33,7 +32,7 @@ export const findAllPlants = (list, query) => {
           {
             model: User,
             through: { attributes: [] },
-            attributes: ["id", "name", "email"],
+            attributes: ["id", "name"],
           },
         ],
       };
@@ -43,11 +42,8 @@ export const findAllPlants = (list, query) => {
       options.include[0].where = { name: { [Op.like]: `%${query.user}%` } };
     }
   } else if (list === "user") {
-    console.log("user");
     options = { ...options, where: { userId: query } };
   }
-
-  console.log("plant");
 
   return Plant.findAll(options);
 };
@@ -62,7 +58,11 @@ export const findPlantById = (id) => {
 };
 
 export const createPlant = async (plant, userId) => {
-  const newPlant = await Plant.create({ ...plant });
+  const newPlant = await Plant.create({
+    name: plant.name,
+    type: plant.type,
+    image: plant.image,
+  });
   newPlant.setUser(userId);
   return newPlant.save();
 };
