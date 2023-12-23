@@ -84,6 +84,7 @@ export const userSignIn = async (req, res) => {
       "email",
       "password",
       "avatar",
+      "validate_account",
     ]);
     if (!user) {
       message = "Identifiant ou mot de passe incorrect.";
@@ -303,6 +304,7 @@ export const userDelete = async (req, res) => {
     user.deletedOn = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
     await user.save();
     message = `Votre compte à été suspendu. Sans aucune autre activité, il sera supprimé dans 30 jours. Si vous décidez de revenir sur votre choix, connecter vous simplement sur l'application.`;
+    req.logout();
     res.json({ message });
   } catch (error) {
     console.error("<userController: userDelete>", error);
@@ -409,8 +411,13 @@ export const userUpdateAvatar = [
           message = "Le type de fichier envoyé est invalide.";
           res.status(400).json({ message });
           next(err);
+        } else if (err && err.message === "Unexpected field") {
+          message = "Les données envoyées contiennent un champ incorrect.";
+          res.status(400).json({ message });
+          next(err);
         } else if (err) {
-          throw new Error(err);
+          res.status(400).json({ message: err.message });
+          next(err);
         }
         next();
       });

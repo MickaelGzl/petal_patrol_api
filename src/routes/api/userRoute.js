@@ -31,4 +31,9 @@ router.put("/:id", ensureIsAuthenticated, ensureUserHaveRights, userUpdateName);
 
 router.delete("/", ensureIsAuthenticated, userDelete);
 
-router.delete("/:id/avatar", ensureIsAuthenticated, ensureUserHaveRights, userDeleteAvatar);
+router.delete(
+  "/:id/avatar",
+  ensureIsAuthenticated,
+  ensureUserHaveRights,
+  userDeleteAvatar
+);

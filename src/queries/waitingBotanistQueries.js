@@ -5,8 +5,7 @@ export const findAllWaitingBotanist = () => {
     include: [
       {
         model: User,
-        through: { attributes: [] },
-        attributes: ["id", "name", "email"],
+        attributes: ["id", "name", "siret"],
       },
     ],
   });
