@@ -38,7 +38,6 @@ export const UserModel = (sequelize, DataTypes) => {
       },
       activation_token: {
         type: DataTypes.STRING,
-        defaultValue: UUIDV4(),
       },
       validate_account: {
         type: DataTypes.BOOLEAN,
@@ -47,9 +46,11 @@ export const UserModel = (sequelize, DataTypes) => {
       siret: {
         type: DataTypes.STRING,
       },
-      deleted: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
+      deletedOn: {
+        type: DataTypes.DATE,
+      },
+      lastLog: {
+        type: DataTypes.DATE,
       },
     },
     {

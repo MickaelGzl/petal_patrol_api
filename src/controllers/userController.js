@@ -14,6 +14,7 @@ import {
   hashPassword,
   findUserByToken,
   updateAvatar,
+  validUser,
 } from "../queries/userQueries.js";
 import { createTokenFromSecret } from "../config/csrfConfig.js";
 import { emailFactory } from "../mailer/index.js";
@@ -24,21 +25,24 @@ import { fileURLToPath } from "url";
 dotenv.config();
 const upload = fileUploadConfig("users");
 /**
- * create an user when signup in application
- * verify email is not already in use
- * give to user USER role
+ * create a new user. email have to be unique.
+ * verify if user registered as user or as botanist, in function, send email verification mail or notification to administrator with botanist message
+ *@returns name and email of the new registered user
  */
 export const userCreate = async (req, res) => {
   let message;
   try {
-    const { name, email, password, isBotanist } = req.body;
+    const { name, email, password, isBotanist, siret } = req.body;
     const emailAlreadyInUse = await findUserByEmail(email, ["email"]);
     if (emailAlreadyInUse) {
       message = "Cet email est déjà utilisé.";
       return res.status(409).json({ message });
     }
     const userRole = await findRoleByName(isBotanist ? "BOTANIST" : "USER");
-    const user = await createUser({ email, password, name }, userRole);
+    const infoUser = isBotanist
+      ? { email, password, name, siret }
+      : { email, password, name };
+    const user = await createUser(infoUser, userRole);
 
     if (isBotanist) {
       await createWaitingBotanist(user.id, req.body.message);
@@ -56,7 +60,7 @@ export const userCreate = async (req, res) => {
 
     res.json({
       message,
-      user: { id: user.id, name: user.name, email: user.email },
+      user: { name: user.name, email: user.email },
     });
   } catch (error) {
     console.error("<userController: userCreate>", error);
@@ -66,9 +70,9 @@ export const userCreate = async (req, res) => {
 };
 
 /**
- * log user
- * find user corresponding to email and compare the passwords in body and db
- * user need to validate is email
+ * log user by vérifying email and password
+ * update user log date and deleteOn
+ *@returns connecting user and his roles
  */
 export const userSignIn = async (req, res) => {
   let message;
@@ -79,7 +83,6 @@ export const userSignIn = async (req, res) => {
       "name",
       "email",
       "password",
-      "validate_account",
       "avatar",
     ]);
     if (!user) {
@@ -92,15 +95,13 @@ export const userSignIn = async (req, res) => {
       return res.status(404).json({ message });
     }
 
-    if (!user.validate_account) {
-      message =
-        "Vous devez confirmer votre email pour continuer sur l'application.";
-      return res.status(403).json({ message });
-    }
     const userRoles = (await findRoleByUserId(user.id)).map(
       (role) => role.role
     );
     req.login(user);
+    user.lastLog = new Date(Date.now());
+    user.deletedOn = null;
+    await user.save();
     message = "Connexion réussi.";
     return res.json({
       message,
@@ -130,17 +131,26 @@ export const userSignOut = (req, res) => {
   }
 };
 
+/**
+ * validate user email when clicking on email link
+ * verify the validity of the token and valid user account
+ */
 export const userValidateEmail = async (req, res) => {
   let message;
   try {
+    if (
+      !req.params.serverToken ||
+      !validateTokenWithSecret(process.env.CSRF_SECRET, req.params.serverToken)
+    ) {
+      message = "Token invalide";
+      return res.status(401).json({ message });
+    }
     const user = await findUserByToken(req.params.token);
     if (!user) {
       message = "Aucun utilisateur pour l'identifiant fournis.";
       return res.status(404).json({ message });
     }
-    user.validate_account = true;
-    user.activation_token = "";
-    await user.save();
+    await validUser(user);
     message = "Le compte est désormais valide.";
     return res.json({ message });
   } catch (error) {
@@ -151,37 +161,24 @@ export const userValidateEmail = async (req, res) => {
 };
 
 /**
- * find all users, can search by name ( + role if user is admin)
- * if receive role.query and user isn't admin, block request
- * if user isn't admin, do not send role and validate_account
+ * find all users, also can query name and role
+ * only admin can access to this request
+ *@returns all user registered in application and their roles
  */
 export const userFindAll = async (req, res) => {
   let message;
-  const isAdmin = req.user.role.includes("ADMIN");
   try {
-    if (req.query.role && !isAdmin) {
-      message = "Vous n'avez pas les droits d'accès à cette ressource";
-      return res.status(403).json({ message });
-    }
-    const allUsers = await findAllUser(req.query, req.user);
+    const allUsers = await findAllUser(req.query);
     message = "La liste des utilisateurs à bien été récupérée.";
 
     res.json({
       message,
-      users: isAdmin
-        ? allUsers.map(({ dataValues }) => {
-            return {
-              ...dataValues,
-              roles: dataValues.roles.map((role) => role.role),
-            };
-          })
-        : allUsers.map(({ dataValues }) => {
-            delete dataValues.roles;
-            delete dataValues.validate_account;
-            delete dataValues.siret;
-            delete dataValues.deleted;
-            return dataValues;
-          }),
+      users: allUsers.map(({ dataValues }) => {
+        return {
+          ...dataValues,
+          roles: dataValues.roles.map((role) => role.role),
+        };
+      }),
     });
   } catch (error) {
     console.error("<userController: userFindAll>", error);
@@ -192,14 +189,22 @@ export const userFindAll = async (req, res) => {
 
 /**
  * find specific user by id
+ *@returns user name, avatar and siret
+ *@returns to admin, also send email, and info like account is valid, last logging date and date of deletion
  */
 export const userFindOne = async (req, res) => {
   let message;
   try {
     const isAdmin = req.user.role.includes("ADMIN");
-    let attributes = ["id", "name", "email", "avatar", "siret"];
+    let attributes = ["id", "name", "avatar", "siret"];
     if (isAdmin) {
-      attributes = [...attributes, "validate_account", "deleted"];
+      attributes = [
+        ...attributes,
+        "email",
+        "validate_account",
+        "deletedOn",
+        "lastLog",
+      ];
     }
     let user = await findUserById(req.params.id, attributes);
     if (!user) {
@@ -222,9 +227,11 @@ export const userFindOne = async (req, res) => {
 };
 
 /**
- * find user by id and update him with new values send in request
+ * update user name.
+ * Only own user can update his username, or admin can do it if user name isn't appropriated.
+ * @returns id and new name of user modified
  */
-export const userUpdate = async (req, res) => {
+export const userUpdateName = async (req, res) => {
   let message;
   try {
     const user = await findUserById(req.params.id);
@@ -232,47 +239,84 @@ export const userUpdate = async (req, res) => {
       message = "Aucun utilisateur correspondant à l'identifiant fourni.";
       return res.status(404).json({ message, id: req.params.id });
     }
-    const { name, email } = req.body;
-    const updatedUser = await updateUser(user, { name, email });
+    const { name } = req.body;
+
+    const updatedUser = await updateUser(user, { name });
+    message = "Mise à jour de l'utilisateur réussi.";
+    res.json({
+      message,
+      user: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+      },
+    });
+  } catch (error) {
+    console.error("<userController: userUpdateName>", error);
+    message = "Erreur lors de la modification du pseudo de l'utilisateur.";
+    res.status(500).json({ message });
+  }
+};
+
+/**
+ * update user email.
+ * Only own user can update his email.
+ * When doing this action, create an activation token and repass user validate account to false.
+ * User will receive a new email to validate his new email
+ */
+export const userUpdateEmail = async (req, res) => {
+  let message;
+  try {
+    const user = await findUserById(req.user.id);
+    const { email } = req.body;
+    const updatedUser = await updateUser(user, { email });
+    // emailFactory.sendEmailVerificationLink({
+    //   to: email,
+    //   url: req.headers.origin,
+    //   token: updatedUser.activation_token,
+    // });
     message = "Mise à jour de l'utilisateur réussi.";
     res.json({
       message,
       user: {
         name: updatedUser.name,
         email: updatedUser.email,
+        validate_account: updatedUser.validate_account,
       },
     });
   } catch (error) {
-    console.error("<userController: userUpdate>", error);
-    message = "Erreur lors de la modification de l'utilisateur.";
+    console.error("<userController: userUpdateEmail>", error);
+    message = "Erreur lors de la modification de l'email de l'utilisateur.";
     res.status(500).json({ message });
   }
 };
 
 /**
- * delete user corresponding to id sent in params
- * set deleted to true, let one month to restore account
- * then just delete the user
+ * get user corresponding to id sent in params.
+ * Only own user can ack to delete his account.
+ * User account will be mark as deleted for 30 days in db, time for user to changing mind
+ * after this time, account will be deleted for true
  */
 export const userDelete = async (req, res) => {
   let message;
   try {
-    const user = await findUserById(req.params.id);
-    if (!user) {
-      message = "Aucun utilisateur trouvé pour l'identifiant fourni.";
-      return res.status(404).json({ message });
-    }
-    user.deleted = true;
+    const user = await findUserById(req.user.id);
+    user.deletedOn = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
     await user.save();
-    message = `L'utilisateur ${req.params.id} à été suspendu. Sans aucune autre activité, il sera supprimé dans 30 jours .`;
+    message = `Votre compte à été suspendu. Sans aucune autre activité, il sera supprimé dans 30 jours. Si vous décidez de revenir sur votre choix, connecter vous simplement sur l'application.`;
     res.json({ message });
   } catch (error) {
     console.error("<userController: userDelete>", error);
-    message = "Erreur lors de la suppression de l'utilisateur.";
+    message =
+      "Erreur lors de la modification d'accéssibilité du compte de l'utilisateur.";
     res.status(500).json({ message });
   }
 };
 
+/**
+ * get email send for action.
+ * create a password token and a expiration time for the user.
+ * Sent an email to modify his password
+ */
 export const userPasswordForgot = async (req, res) => {
   let message;
   try {
@@ -306,6 +350,11 @@ export const userPasswordForgot = async (req, res) => {
   }
 };
 
+/**
+ * When an user click on the link sent in mail of the request before.
+ * validate the token send by server, the password token of user and also it's not expired yet
+ * hash the new password, remove token and expiration time
+ */
 export const userResetPassword = async (req, res) => {
   let message;
   try {
@@ -340,46 +389,99 @@ export const userResetPassword = async (req, res) => {
   }
 };
 
+/**
+ * update user avatar.
+ * Only own user can update his avatar
+ * first pass to multer middleware to register file (verify file size and mimetype)
+ * update avatar with the new file and delete the previous one
+ */
 export const userUpdateAvatar = [
   async (req, res, next) => {
     let message;
     try {
       upload.single("avatar")(req, res, (err) => {
         if (err && err.code === "LIMIT_FILE_SIZE") {
-          ("Le fichier est trop volumineux. La taille maximate autorisée est de 500Mb.");
-          return res.status(400).json({ error: err, message });
+          message =
+            "Le fichier est trop volumineux. La taille maximate autorisée est de 1Mb.";
+          res.status(400).json({ message });
+          next(err);
         } else if (err && err.message === "type not allowed") {
           message = "Le type de fichier envoyé est invalide.";
-          return res.status(500).json({ error: err, message });
+          res.status(400).json({ message });
+          next(err);
         } else if (err) {
           throw new Error(err);
         }
         next();
       });
     } catch (error) {
-      console.log("<userController: userUpdateAvatar>", error);
+      console.error("<userController: userUpdateAvatar>", error);
       message = "Une erreur est survenue lors du traitement du fichier";
-      return res.status(500).json({ message });
+      res.status(500).json({ message });
+      next(error);
     }
   },
   async (req, res) => {
+    let message;
     try {
       const { id, avatar: previousAvatar } = req.user;
       const filename = req.file.filename;
       await updateAvatar(id, filename);
-      unlink(
-        join(fileURLToPath(import.meta.url), `../../public/assets/users`),
-        (err) => {
-          if (err) throw err;
-        }
-      );
+      if (previousAvatar) {
+        unlink(
+          join(
+            fileURLToPath(import.meta.url),
+            `../../../public/assets/users/${previousAvatar}`
+          ),
+          (err) => {
+            if (err) throw err;
+          }
+        );
+      }
       message = "Avatar modifié avec succés.";
       res.json({ message, filename });
     } catch (error) {
-      console.log("<userController: userUpdateAvatar>", error);
+      console.error("<userController: userUpdateAvatar>", error);
       message =
         "Une erreur est survenue lors de l'actualisation de l'avatar de l'utilisateur";
       return res.status(500).json({ message });
     }
   },
 ];
+
+/**
+ * Delete the current user avatar.
+ * Action can be make by own user or Admin is avatar isn't appropriated.
+ * delete the path registered in db and also the file from the backend
+ */
+export const userDeleteAvatar = async (req, res) => {
+  let message;
+  try {
+    const user = await findUserById(req.params.id);
+    if (!user || !user.avatar) {
+      message = "Aucune donnée trouvée pour l'identifiant fourni.";
+      return res.status(404).json({ message });
+    }
+    unlink(
+      join(
+        fileURLToPath(import.meta.url),
+        `../../public/assets/users/${user.avatar}`
+      ),
+      (err) => {
+        if (err) throw err;
+      }
+    );
+    user.avatar = "";
+    await user.save();
+    message = "L'avatar de l'utilisateur à correctement été supprimé.";
+    res.json({
+      message,
+      user: { id: user.id, name: user.name, avatar: user.avatar },
+    });
+  } catch (error) {
+    console.error("<userController: userDeleteAvatar>", error);
+    message =
+      "Une erreur est survenue lors de la suppression de l'avatar de l'utilisateur";
+    return res.status(500).json({ message });
+  }
+};

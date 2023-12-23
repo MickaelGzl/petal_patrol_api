@@ -27,6 +27,15 @@ export const ensureUserHaveRights = (req, res, next) => {
   }
 };
 
+/**
+ * Verify is user can make modifications on Data (data is user's property or user is admin)
+ * @param {Object} object the Object in database the user want to modify
+ * @param {User} user the user store in req.user
+ * @returns Object with status 404 and message if object in param is undefined
+ * @returns Object with status 403 if user can't make action
+ * @returns null if ok
+ *
+ */
 export const verifyUserCanMakeAction = (object, user) => {
   if (!object) {
     return {

@@ -15,5 +15,5 @@ router.use("/api", apiRoute);
 // });
 
 router.use("*", (req, res) => {
-  res.send("no route corresponding");
+  res.status(404).json({ message: "no route corresponding" });
 });

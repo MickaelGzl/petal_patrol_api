@@ -5,6 +5,10 @@ import {
   findWaitingBotanistById,
 } from "../queries/waitingBotanistQueries.js";
 
+/**
+ * Get a list of all botanist that want to registered in app.
+ * Only admin can access this request
+ */
 export const waitingBotanistFindAll = async (req, res) => {
   let message;
   try {
@@ -19,13 +23,24 @@ export const waitingBotanistFindAll = async (req, res) => {
   }
 };
 
+/**
+ *
+ * @returns
+ */
 export const waitingBotanistUpdate = async (req, res) => {
   let message;
   try {
+    if (!req.user.roles.includes("ADMIN")) {
+      message = "Vous n'avez pas les droits.";
+      return res.status(403).json({ message });
+    }
     const { acceptance } = req.body;
     if (acceptance === undefined) {
       message = "Aucune réponse fourni dans la requête.";
       return res.status(404).json({ message });
+    } else if (acceptance !== true && acceptance !== false) {
+      message = `Attend une réponse de type booleen. Reçu: ${acceptance}`;
+      return res.status(400).json({ message });
     }
     const waitingBotanist = await findWaitingBotanistById(req.params.id);
     if (!waitingBotanist) {

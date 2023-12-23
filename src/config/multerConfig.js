@@ -10,8 +10,13 @@ const authorizedMimeTypes = [
   "svg",
   "webp",
   "bmp",
-]; //define the authorides file mymetypes
+];
 
+/**
+ * get destination of the received file depending of the param
+ * @param {string} fileFolder folder depending of what is the file (example: users, plants, etc.)
+ * @returns the destination of the file
+ */
 function getDestination(fileFolder) {
   return (req, file, cb) => {
     cb(
@@ -24,6 +29,11 @@ function getDestination(fileFolder) {
   };
 }
 
+/**
+ * create the base config for file upload (authorized mimetypes, filesize limits, etc.)
+ * @param {string} fileFolder param to pass to function getDestination
+ * @returns Multer config
+ */
 export const fileUploadConfig = (fileFolder) => {
   return multer({
     storage: multer.diskStorage({
@@ -33,7 +43,7 @@ export const fileUploadConfig = (fileFolder) => {
       destination: getDestination(fileFolder),
     }),
     limits: {
-      fileSize: 512001,
+      fileSize: 1048576,
     },
     fileFilter: (req, file, cb) => {
       if (!authorizedMimeTypes.includes(file.mimetype.split("/")[1])) {

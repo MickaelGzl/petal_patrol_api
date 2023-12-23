@@ -37,10 +37,7 @@ export const findAllUser = (query) => {
     options = {
       ...options,
       where: {
-        [Op.or]: [
-          { name: { [Op.like]: `%${query.search}%` } },
-          { email: { [Op.like]: `%${query.search}%` } },
-        ],
+        name: { [Op.like]: `%${query.search}%` },
       },
     };
   }
@@ -87,7 +84,19 @@ export const createUser = async (user, role) => {
     validate_account: true, //TODO: remove this before prod
   });
   newUser.addRole(role);
-  return newUser.save();
+  return invalidUser(newUser);
+};
+
+export const invalidUser = (user) => {
+  user.validate_account = false;
+  user.activation_token = uuidv4();
+  return user.save();
+};
+
+export const validUser = (user) => {
+  user.validate_account = true;
+  user.activation_token = "";
+  return user.save();
 };
 
 /**
@@ -113,6 +122,10 @@ export const findUserByToken = (token) => {
  * @returns the updated user with new values
  */
 export const updateUser = (user, newData) => {
+  if (newData.email) {
+    user.email = newData.email;
+    return invalidUser(user);
+  }
   return user.update(newData);
 };
 
@@ -141,8 +154,6 @@ export const updateAvatar = async (id, filename) => {
 };
 
 export const updateBotanistUser = async (id) => {
-  const botanist = await findUserById(id);
-  botanist.validate_account = true;
-  botanist.activation_token = "";
-  return botanist.save();
+  const botanist = await User.findByPk(id);
+  return validUser(botanist);
 };

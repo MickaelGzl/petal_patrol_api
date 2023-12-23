@@ -9,7 +9,7 @@ export const PlantModel = (sequelize, DataTypes) => {
       type: {
         type: DataTypes.STRING,
       },
-      image: {
+      images: {
         type: DataTypes.STRING,
         allowNull: false,
       },

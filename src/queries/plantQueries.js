@@ -32,7 +32,7 @@ export const findAllPlants = (list, query) => {
           {
             model: User,
             through: { attributes: [] },
-            attributes: ["id", "name", "email"],
+            attributes: ["id", "name"],
           },
         ],
       };
@@ -58,7 +58,11 @@ export const findPlantById = (id) => {
 };
 
 export const createPlant = async (plant, userId) => {
-  const newPlant = await Plant.create({ ...plant });
+  const newPlant = await Plant.create({
+    name: plant.name,
+    type: plant.type,
+    image: plant.image,
+  });
   newPlant.setUser(userId);
   return newPlant.save();
 };

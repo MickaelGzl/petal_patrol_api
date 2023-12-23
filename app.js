@@ -54,9 +54,21 @@ app
   .use(extractUserFromToken)
   .use(addJwtFeatures)
   .use(
-    "/image",
+    "/images/images",
     express.static(
       join(fileURLToPath(import.meta.url), "../public/assets/images")
+    )
+  )
+  .use(
+    "/images/users",
+    express.static(
+      join(fileURLToPath(import.meta.url), "../public/assets/users")
+    )
+  )
+  .use(
+    "/images/plants",
+    express.static(
+      join(fileURLToPath(import.meta.url), "../public/assets/plants")
     )
   )
   .use(router);
@@ -65,7 +77,8 @@ app.listen(process.env.PORT, () =>
   console.log(`app listen on port ${process.env.PORT}`)
 );
 
-//route to update avatar
-//route to set deleted to true, and set deleted to false if user return
-//time to thrully delete user account
-//pass validate_account to true when an user validate his email
+//update plant create with multer store files, just send object with name, type and image
+
+//si un fichier est invalide je ne peux plus accéder a aucune route
+
+//validate_account = n'empeche pas de se connecter mais d'enregistrer des offres ou de répondres à celles ci
