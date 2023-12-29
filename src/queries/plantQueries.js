@@ -57,11 +57,11 @@ export const findPlantById = (id) => {
   return Plant.findByPk(id);
 };
 
-export const createPlant = async (plant, userId) => {
+export const createPlant = async ({ name, type, images }, userId) => {
   const newPlant = await Plant.create({
-    name: plant.name,
-    type: plant.type,
-    image: plant.image,
+    name,
+    type,
+    images,
   });
   newPlant.setUser(userId);
   return newPlant.save();

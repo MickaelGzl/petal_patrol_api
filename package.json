@@ -33,6 +33,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.7",
+    "pdfkit-table": "^0.1.99",
     "pug": "^3.0.2",
     "sequelize": "^6.35.2",
     "sqlite3": "^5.1.6",

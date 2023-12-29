@@ -24,7 +24,11 @@ export const plantFindAll = async (req, res) => {
     res.json({
       message,
       plants: allPlants.map((plant) => {
-        return { ...plant, images: JSON.parse(plant.images) };
+        return {
+          ...plant.dataValues,
+          images: JSON.parse(plant.images),
+          imageRoute: "/images/plants",
+        };
       }),
     });
   } catch (error) {
@@ -46,7 +50,11 @@ export const plantByUser = async (req, res) => {
     res.json({
       message,
       plants: allPlants.map((plant) => {
-        return { ...plant, images: JSON.parse(plant.images) };
+        return {
+          ...plant.dataValues,
+          images: JSON.parse(plant.images),
+          imageRoute: "/images/plants",
+        };
       }),
     });
   } catch (error) {
@@ -118,8 +126,9 @@ export const plantCreate = [
   async (req, res) => {
     let message;
     try {
+      console.log("in create");
       const images = JSON.stringify(
-        req.files["image"].map((image) => `/images/plants/${image.filename}`)
+        req.files["image"].map((image) => image.filename)
       );
       const { name, type } = req.body;
       const plant = await createPlant({ name, type, images }, req.user.id);
