@@ -20,6 +20,7 @@ lerna-debug.log*
 
 #local
 node_modules
+dist
 .env
 src/db/database
-dist
+public/assets
