@@ -145,7 +145,7 @@ export const plantCreate = [
 /**
  * update name and type of Plant.
  * Only owner and admin can make action if name isn't appropriated
- * @returns tje updated plant
+ * @returns the updated plant
  */
 export const plantUpdate = async (req, res) => {
   let message;
@@ -167,45 +167,31 @@ export const plantUpdate = async (req, res) => {
   }
 };
 
-// export const plantAddImages = [
-//   async (req, res, next) => {
-//     console.log("images: ", req.body.images);
-//     const plantToUpdate = await findPlantById(req.params.id);
-//     if (!plantToUpdate || plantToUpdate.userId != req.user.id) {
-//       message = "Vous ne pouvez pas effectuer cette action";
-//       res.status(403).json({ message });
-//       next("User cannot make action");
-//     } else if (
-//       JSON.parse(plantToUpdate.images).length + req.body.images.length >
-//       6
-//     ) {
-//       message = "Vous ne pouvez pas uploader plus de 6 images pour vos plantes";
-//       res.status(400).json({ message });
-//       next("user cannot make action");
-//     } else {
-//       next();
-//     }
-//   },
-//   uploadPlantImages,
-//   async (req, res) => {
-//     let message;
-//     try {
-//       const plantToUpdate = await findPlantById(req.params.id);
+export const plantAddImages = [
+  uploadPlantImages,
+  async (req, res) => {
+    let message;
+    try {
+      const plantToUpdate = await findPlantById(req.params.id);
+      const actualImagesNumber = JSON.parse(plantToUpdate.images).length;
+      if (actualImagesNumber + req.files["image"].length > 6) {
+        message = `Vous ne pouvez pas enregistrer plus de 6 images pour une même plante. Vous en avez déjà ${actualImagesNumber}`;
+        return res.status(400).json({ message });
+      }
+      const images = JSON.stringify(
+        req.files["image"].map((image) => `/images/plants/${image.filename}`)
+      );
 
-//       const images = JSON.stringify(
-//         req.files["image"].map((image) => `/images/plants/${image.filename}`)
-//       );
-
-//       const updatedPlant = await updatePlant(plantToUpdate, { images });
-//       message = "Une nouvelle plante à bien été crée.";
-//       return res.json({ message, plant });
-//     } catch (error) {
-//       console.error("<plantController: plantCreate>", error);
-//       message = "Erreur lors de la création de la plante";
-//       res.status(500).json({ message });
-//     }
-//   },
-// ];
+      const updatedPlant = await updatePlant(plantToUpdate, { images });
+      message = "Une nouvelle plante à bien été crée.";
+      return res.json({ message, plant });
+    } catch (error) {
+      console.error("<plantController: plantCreate>", error);
+      message = "Erreur lors de la création de la plante";
+      res.status(500).json({ message });
+    }
+  },
+];
 
 // export const plantDeteleImages = async(req, res) =>{}
 

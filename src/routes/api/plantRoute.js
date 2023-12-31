@@ -4,6 +4,7 @@ import {
   ensureUserHaveRights,
 } from "../../config/authConfig.js";
 import {
+  plantAddImages,
   plantById,
   plantByUser,
   plantCreate,
@@ -21,5 +22,6 @@ router.get("/:id", ensureIsAuthenticated, plantById);
 router.post("/", ensureIsAuthenticated, plantCreate);
 
 router.put("/:id", ensureIsAuthenticated, plantUpdate);
+router.put("/:id/image", ensureIsAuthenticated, plantAddImages);
 
 router.delete("/:id", ensureIsAuthenticated, plantDelete);
