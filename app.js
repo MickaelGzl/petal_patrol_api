@@ -73,8 +73,10 @@ app
   )
   .use(router);
 
-app.listen(process.env.PORT || 3000, () =>
-  console.log(`app listen on port http://localhost:${process.env.PORT}`)
+const port = process.env.PORT || 3000;
+
+app.listen(port, () =>
+  console.log(`app listen on port http://localhost:${port}`)
 );
 
 //update plant create with multer store files, just send object with name, type and image
