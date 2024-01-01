@@ -17,6 +17,7 @@ import {
 import { createTokenFromSecret } from "../config/csrfConfig.js";
 import { emailFactory } from "../mailer/index.js";
 import { createWaitingBotanist } from "../queries/waitingBotanistQueries.js";
+import { verifyUserCanMakeAction } from "../config/authConfig.js";
 
 dotenv.config();
 const upload = fileUploadConfig("users");
@@ -95,6 +96,10 @@ export const userSignIn = async (req, res) => {
     const userRoles = (await findRoleByUserId(user.id)).map(
       (role) => role.role
     );
+    if (userRoles.includes("BOTANIST") && user.validate_account === false) {
+      message = "Votre compte n'a pas encore été validé par l'administrateur";
+      return res.status(403).json({ message });
+    }
     req.login(user);
     user.lastLog = new Date(Date.now());
     user.deletedOn = null;

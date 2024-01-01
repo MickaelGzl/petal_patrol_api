@@ -13,7 +13,7 @@ export const findAllWaitingBotanist = () => {
 
 export const createWaitingBotanist = async (userId, message) => {
   const newBotanist = await waitingBotanist.create({ message });
-  newBotanist.addUser(userId);
+  newBotanist.setUser(userId);
   return newBotanist.save();
 };
 

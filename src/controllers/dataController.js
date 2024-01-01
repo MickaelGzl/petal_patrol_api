@@ -42,22 +42,18 @@ export const dataUserSend = async (req, res) => {
     async function createTable(data) {
       let options = null;
       if (data instanceof sequelize.models.user) {
-        console.log("user");
         options = {
           title: "Information compte utilisateur",
           headers: ["identifiant", "nom d'utilisateur", "email", "avatar"],
           rows: [[data.id, data.name, data.email, data.avatar || "null"]],
         };
       } else if (data[0] instanceof sequelize.models.role) {
-        console.log("role");
-        console.log(data);
         options = {
           title: "Rôle compte utilisateur",
           headers: [{ label: "role", property: "role" }],
           datas: data,
         };
       } else if (data[0] instanceof sequelize.models.plant) {
-        console.log(plant);
         options = {
           title: "Plantes enregistrées par l'utilisateur",
           headers: [
@@ -67,12 +63,11 @@ export const dataUserSend = async (req, res) => {
           datas: data,
         };
       } else {
-        console.log("et merde");
+        console.log("empty datas or unknow model");
         console.log(data);
       }
 
       if (options) {
-        console.log(options);
         await doc.table(options);
       }
     }

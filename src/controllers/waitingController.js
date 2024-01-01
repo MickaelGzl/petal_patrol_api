@@ -30,7 +30,7 @@ export const waitingBotanistFindAll = async (req, res) => {
 export const waitingBotanistUpdate = async (req, res) => {
   let message;
   try {
-    if (!req.user.roles.includes("ADMIN")) {
+    if (!req.user.role.includes("ADMIN")) {
       message = "Vous n'avez pas les droits.";
       return res.status(403).json({ message });
     }
