@@ -22,6 +22,9 @@ router.get("/:id", ensureIsAuthenticated, plantById);
 router.post("/", ensureIsAuthenticated, plantCreate);
 
 router.put("/:id", ensureIsAuthenticated, plantUpdate);
-router.put("/:id/image", ensureIsAuthenticated, plantAddImages);
+router.put("/:id/add-image", ensureIsAuthenticated, plantAddImages);
+router.put("/:id/delete-image", ensureIsAuthenticated, (req, res) =>
+  res.send("delete one or multiple images with names send in req.body")
+);
 
 router.delete("/:id", ensureIsAuthenticated, plantDelete);

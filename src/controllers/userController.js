@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import { unlink } from "fs";
 import dotenv from "dotenv";
-import { fileUploadConfig } from "../config/multerConfig.js";
+import { deleteFile, fileUploadConfig } from "../config/multerConfig.js";
 import { findRoleByName, findRoleByUserId } from "../queries/roleQueries.js";
 import {
   createUser,
@@ -10,7 +9,6 @@ import {
   findAllUser,
   findUserById,
   updateUser,
-  deleteUser,
   hashPassword,
   findUserByToken,
   updateAvatar,
@@ -19,8 +17,6 @@ import {
 import { createTokenFromSecret } from "../config/csrfConfig.js";
 import { emailFactory } from "../mailer/index.js";
 import { createWaitingBotanist } from "../queries/waitingBotanistQueries.js";
-import { join } from "path";
-import { fileURLToPath } from "url";
 
 dotenv.config();
 const upload = fileUploadConfig("users");
@@ -435,15 +431,7 @@ export const userUpdateAvatar = [
       const filename = req.file.filename;
       await updateAvatar(id, filename);
       if (previousAvatar) {
-        unlink(
-          join(
-            fileURLToPath(import.meta.url),
-            `../../../public/assets/users/${previousAvatar}`
-          ),
-          (err) => {
-            if (err) throw err;
-          }
-        );
+        deleteFile("users", previousAvatar);
       }
       message = "Avatar modifié avec succés.";
       res.json({ message, filename });
@@ -469,15 +457,7 @@ export const userDeleteAvatar = async (req, res) => {
       message = "Aucune donnée trouvée pour l'identifiant fourni.";
       return res.status(404).json({ message });
     }
-    unlink(
-      join(
-        fileURLToPath(import.meta.url),
-        `../../public/assets/users/${user.avatar}`
-      ),
-      (err) => {
-        if (err) throw err;
-      }
-    );
+    deleteFile("users", user.avatar);
     user.avatar = "";
     await user.save();
     message = "L'avatar de l'utilisateur à correctement été supprimé.";
