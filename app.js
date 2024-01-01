@@ -73,7 +73,7 @@ app
   )
   .use(router);
 
-app.listen(process.env.PORT, () =>
+app.listen(process.env.PORT || 3000, () =>
   console.log(`app listen on port http://localhost:${process.env.PORT}`)
 );
 
