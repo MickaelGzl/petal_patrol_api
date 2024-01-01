@@ -1,6 +1,6 @@
-import { unlink } from "fs";
 import { verifyUserCanMakeAction } from "../config/authConfig.js";
-import { fileUploadConfig } from "../config/multerConfig.js";
+import { deleteFile, fileUploadConfig } from "../config/multerConfig.js";
+import { findOfferByPlantId } from "./offerController.js";
 import {
   createPlant,
   deletePlant,
@@ -8,7 +8,6 @@ import {
   findPlantById,
   updatePlant,
 } from "../queries/plantQueries.js";
-import { findOfferByPlantId } from "./offerController.js";
 
 const upload = fileUploadConfig("plants");
 
@@ -73,7 +72,7 @@ export const plantById = async (req, res) => {
   let message;
   try {
     const plant = await findPlantById(req.params.id);
-    const cancel = verifyUserCanMakeAction(plant, req.user);
+    const cancel = verifyUserCanMakeAction(plant, req.user, true);
     if (cancel) {
       message = cancel.message;
       return res.status(cancel.status).json({ message });
@@ -101,7 +100,8 @@ const uploadPlantImages = async (req, res, next) => {
         res.status(400).json({ message });
         next(err);
       } else if (err && err.code === "LIMIT_UNEXPECTED_FILE") {
-        res.status(400).json({ error: err, message });
+        message = "Vous ne pouvez pas uploader plus de 6 fichiers.";
+        res.status(400).json({ message });
         next(err);
       } else if (err) {
         throw new Error(err);
@@ -126,7 +126,7 @@ export const plantCreate = [
   async (req, res) => {
     let message;
     try {
-      console.log("in create");
+      // console.log("in create");
       const images = JSON.stringify(
         req.files["image"].map((image) => image.filename)
       );
@@ -151,7 +151,7 @@ export const plantUpdate = async (req, res) => {
   let message;
   try {
     const plantToUpdate = await findPlantById(req.params.id);
-    const cancel = verifyUserCanMakeAction(plantToUpdate, req.user);
+    const cancel = verifyUserCanMakeAction(plantToUpdate, req.user, true);
     if (cancel) {
       message = cancel.message;
       return res.status(cancel.status).json({ message });
@@ -168,26 +168,43 @@ export const plantUpdate = async (req, res) => {
 };
 
 export const plantAddImages = [
+  async (req, res, next) => {
+    const plantToUpdate = await findPlantById(req.params.id);
+    // console.log(plantToUpdate);
+    const cancel = verifyUserCanMakeAction(plantToUpdate, req.user);
+    if (cancel) {
+      res.status(cancel.status).json({ message: cancel.message });
+      next(cancel.message);
+    } else {
+      req.plant = plantToUpdate;
+      next();
+    }
+  },
   uploadPlantImages,
   async (req, res) => {
     let message;
     try {
-      const plantToUpdate = await findPlantById(req.params.id);
-      const actualImagesNumber = JSON.parse(plantToUpdate.images).length;
-      if (actualImagesNumber + req.files["image"].length > 6) {
-        message = `Vous ne pouvez pas enregistrer plus de 6 images pour une même plante. Vous en avez déjà ${actualImagesNumber}`;
+      // const plantToUpdate = await findPlantById(req.params.id);
+      let images = [...JSON.parse(req.plant.images)];
+      // console.log(images);
+      if (images.length + req.files["image"].length > 6) {
+        message = `Vous ne pouvez pas enregistrer plus de 6 images pour une même plante. Vous en avez actuellement ${images.length}`;
+        req.files["image"].forEach((img) => {
+          deleteFile("plants", img.filename);
+        });
         return res.status(400).json({ message });
       }
-      const images = JSON.stringify(
-        req.files["image"].map((image) => `/images/plants/${image.filename}`)
-      );
 
-      const updatedPlant = await updatePlant(plantToUpdate, { images });
-      message = "Une nouvelle plante à bien été crée.";
-      return res.json({ message, plant });
+      images = [...images, ...req.files["image"].map((img) => img.filename)];
+
+      const updatedPlant = await updatePlant(req.plant, {
+        images: JSON.stringify(images),
+      });
+      message = "Images enregistrées.";
+      return res.json({ message, plant: updatedPlant });
     } catch (error) {
-      console.error("<plantController: plantCreate>", error);
-      message = "Erreur lors de la création de la plante";
+      console.error("<plantController: plantAddImages>", error);
+      message = "Erreur lors de l'ajout d'images";
       res.status(500).json({ message });
     }
   },
@@ -205,18 +222,22 @@ export const plantDelete = async (req, res) => {
   try {
     const plantToDelete = await findPlantById(req.params.id);
     const cancel = verifyUserCanMakeAction(plantToDelete, req.user);
-    if (!plantToDelete || plantToDelete.userId != req.user.id) {
-      message = "Vous ne pouvez pas effectuer cette action";
-      return res.status(403).json({ message });
+    if (cancel) {
+      return res.status(cancel.status).json({ message: cancel.message });
     }
     const activeOffersWithThisPlant = await findOfferByPlantId(
       plantToDelete.id
     );
-    if (activeOffersWithThisPlant) {
+    if (activeOffersWithThisPlant.length > 0) {
       message =
         "Vous ne pouvez supprimer cette plante car il y a des offres en cours la concernant.";
       return res.status(409).json({ message });
     }
+    //here we can delete plant, including all images concerning this plant
+    // console.log(plantToDelete);
+    JSON.parse(plantToDelete.images).map((image) =>
+      deleteFile("plants", image)
+    );
     await deletePlant(req.params.id);
     message = "La plante à bien été supprimé.";
     res.json({ message });

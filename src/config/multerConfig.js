@@ -1,3 +1,4 @@
+import { unlink } from "fs";
 import multer from "multer";
 import { join } from "path";
 import { fileURLToPath } from "url";
@@ -53,3 +54,17 @@ export const fileUploadConfig = (fileFolder) => {
     },
   });
 };
+
+export function deleteFile(folder, filename) {
+  unlink(
+    join(
+      fileURLToPath(import.meta.url),
+      `../../../public/assets/${folder}/${filename}`
+    ),
+    (err) => {
+      if (err) {
+        console.error(`error while deleting plant file ${filename}`);
+      }
+    }
+  );
+}

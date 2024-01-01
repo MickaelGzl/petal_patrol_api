@@ -36,15 +36,24 @@ export const ensureUserHaveRights = (req, res, next) => {
  * @returns null if ok
  *
  */
-export const verifyUserCanMakeAction = (object, user) => {
+export const verifyUserCanMakeAction = (
+  object,
+  user,
+  AdminAuthorized = false
+) => {
   if (!object) {
     return {
       status: 404,
       message: "Aucune donnée trouvée pour l'identifiant fourni.",
     };
-  } else if (object.userId !== user.id || user.role.includes("ADMIN")) {
-    return { status: 403, message: "Vous n'avez pas les droits" };
-  } else {
+  }
+
+  if (
+    object.userId === user.id ||
+    (AdminAuthorized && user.role.includes("ADMIN"))
+  ) {
     return null;
+  } else {
+    return { status: 403, message: "Vous n'avez pas les droits" };
   }
 };
