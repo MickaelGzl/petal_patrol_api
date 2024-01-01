@@ -12,18 +12,17 @@ import {
 
 export const router = Router();
 
-router.get("/token", ensureIsAuthenticated, createFormToken);
+router.get("/token", createFormToken);
 router.get("/signout", userSignOut);
+router.get("/is-authenticated", (req, res) =>
+  res.json({ alreadyLogged: !!req.user })
+);
 
 router.post("/signup", userCreate);
 router.post("/signin", userSignIn);
 
-router.post("verify-server-token", verifyToken, (req, res) =>
+router.post("/verify-server-token", verifyToken, (req, res) =>
   res.json({ message: "ok." })
-);
-
-router.post("is-authenticated", ensureIsAuthenticated, (req, res) =>
-  res.json({ message: "already logged in." })
 );
 
 //route for validate account

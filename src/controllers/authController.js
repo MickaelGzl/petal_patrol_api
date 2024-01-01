@@ -23,13 +23,13 @@ export const createFormToken = async (req, res) => {
  * compare received token with secret
  * block the request if token is empty or invalid
  */
-export const verifyToken = async (req, res) => {
+export const verifyToken = async (req, res, next) => {
   let message;
   try {
     const token = req.body.csrfToken;
     if (!token || !validateTokenWithSecret(process.env.CSRF_SECRET, token)) {
       message = "Token invalide.";
-      return res.status(401).json({ message });
+      return res.status(401).json({ message, token });
     }
     next();
   } catch (error) {
