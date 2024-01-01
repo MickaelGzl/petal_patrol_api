@@ -210,7 +210,33 @@ export const plantAddImages = [
   },
 ];
 
-// export const plantDeteleImages = async(req, res) =>{}
+export const plantDeteleImages = async (req, res) => {
+  let message;
+  try {
+    const { images } = req.body;
+    if (!images || !Array.isArray(images) || images.length < 1) {
+      message =
+        "aucune images à supprimer. Veuillez envoyer un tableau d'images à supprimer";
+      return res.status(400).json({ message });
+    }
+    const plantToUpdate = await findPlantById(req.params.id);
+    const cancel = verifyUserCanMakeAction(plantToUpdate, req.user, true);
+    if (cancel) {
+      return res.status(cancel.status).json({ message: cancel.message });
+    }
+    images.forEach((filename) => {
+      plantToUpdate.images.filter((image) => image !== filename);
+      deleteFile("plants", filename);
+    });
+    await plantToUpdate.save();
+    message = "Les images ont été supprimées avec succès";
+    return res.json({ message });
+  } catch (error) {
+    console.error("<plantController: plantDeleteImages>", error);
+    message = "Erreur lors de la suppression d'images";
+    res.status(500).json({ message });
+  }
+};
 
 /**
  * delete a specific plant.
