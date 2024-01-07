@@ -224,13 +224,20 @@ export const plantDeteleImages = async (req, res) => {
     if (cancel) {
       return res.status(cancel.status).json({ message: cancel.message });
     }
+
+    let newImages = JSON.parse(plantToUpdate.images);
+
     images.forEach((filename) => {
-      plantToUpdate.images.filter((image) => image !== filename);
+      newImages = newImages.filter((image) => image !== filename);
       deleteFile("plants", filename);
     });
-    await plantToUpdate.save();
+
+    const updatedPlant = await updatePlant(plantToUpdate, {
+      images: JSON.stringify(newImages),
+    });
+
     message = "Les images ont été supprimées avec succès";
-    return res.json({ message });
+    return res.json({ message, plant: updatedPlant });
   } catch (error) {
     console.error("<plantController: plantDeleteImages>", error);
     message = "Erreur lors de la suppression d'images";
