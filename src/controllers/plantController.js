@@ -1,6 +1,6 @@
 import { verifyUserCanMakeAction } from "../config/authConfig.js";
 import { deleteFile, fileUploadConfig } from "../config/multerConfig.js";
-import { findOfferByPlantId } from "./offerController.js";
+import { findOfferByPlantId } from "../queries/offerQueries.js";
 import {
   createPlant,
   deletePlant,
