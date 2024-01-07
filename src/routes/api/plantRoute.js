@@ -9,6 +9,7 @@ import {
   plantByUser,
   plantCreate,
   plantDelete,
+  plantDeteleImages,
   plantFindAll,
   plantUpdate,
 } from "../../controllers/plantController.js";
@@ -23,8 +24,6 @@ router.post("/", ensureIsAuthenticated, plantCreate);
 
 router.put("/:id", ensureIsAuthenticated, plantUpdate);
 router.put("/:id/add-image", ensureIsAuthenticated, plantAddImages);
-router.put("/:id/delete-image", ensureIsAuthenticated, (req, res) =>
-  res.send("delete one or multiple images with names send in req.body")
-);
+router.put("/:id/delete-image", ensureIsAuthenticated, plantDeteleImages);
 
 router.delete("/:id", ensureIsAuthenticated, plantDelete);
