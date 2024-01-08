@@ -37,9 +37,6 @@ router.put("/:id/advice", ensureIsAuthenticated, (req, res) =>
     "if user want advices, botanist can send advice here. update from previous advice"
   )
 );
-router.put("/:id/guard/:userId", ensureIsAuthenticated, (req, res) =>
-  res.send("update guardian if null")
-);
 
 router.delete("/:id", ensureIsAuthenticated, (req, res) =>
   res.send("delete offer by id")
