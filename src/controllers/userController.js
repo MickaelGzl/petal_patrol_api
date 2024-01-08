@@ -241,7 +241,12 @@ export const userUpdateName = async (req, res) => {
       message = "Aucun utilisateur correspondant à l'identifiant fourni.";
       return res.status(404).json({ message, id: req.params.id });
     }
-    const { name } = req.body;
+    const { name, validate_account } = req.body;
+
+    if (validate_account !== undefined && !req.user.roles.includes("ADMIN")) {
+      message = "Vous n'avez pas les droits";
+      return res.status(403).json({ message });
+    }
 
     const updatedUser = await updateUser(user, { name });
     message = "Mise à jour de l'utilisateur réussi.";
