@@ -1,33 +1,26 @@
 import { Router } from "express";
+import { ensureIsAuthenticated } from "../../config/authConfig.js";
 import {
-  ensureIsAuthenticated,
-  ensureUserHaveRights,
-} from "../../config/authConfig.js";
+  proposalByOffer,
+  proposalByUser,
+  proposalCreate,
+  proposalDelete,
+  proposalGetOne,
+  proposalResponse,
+  proposalUpdate,
+} from "../../controllers/proposalController.js";
 
 export const router = Router();
 
-router.get("/my-proposals", ensureIsAuthenticated, (req, res) =>
-  res.send("send all proposal corresponding to req.user.id")
-);
-router.get("/plant/:id", ensureIsAuthenticated, (req, res) =>
-  res.send("send all proposal corresponding to plant if user is plant owner")
-);
-router.get("/:id", ensureIsAuthenticated, (req, res) =>
-  res.send(
-    "send the proposal corresponding to id if req.user.id === proposal.offer.ownerId "
-  )
-);
+router.get("/my-proposals", ensureIsAuthenticated, proposalByUser);
+router.get("/offer/:id", ensureIsAuthenticated, proposalByOffer);
+router.get("/:id", ensureIsAuthenticated, proposalGetOne);
 
-router.post("/:id", ensureIsAuthenticated, (req, res) =>
-  res.send(
-    "create a proposal associate to an offer by id and req.user.id. Offer need to have not guardian and date_to > data.now()"
-  )
-);
+router.post("/:id", ensureIsAuthenticated, proposalCreate);
 
-router.put("/:id", ensureIsAuthenticated, (req, res) =>
-  res.send("update message of proposal if always exist and user is req.user")
-);
+router.put("/:id", ensureIsAuthenticated, proposalUpdate);
+router.put("/:id/response", ensureIsAuthenticated, proposalResponse);
 
-router.delete("/:id", ensureIsAuthenticated, (req, res) =>
-  res.send("delete proposal if always exist and user is req.user")
-);
+router.delete("/:id", ensureIsAuthenticated, proposalDelete);
+
+//user can accept or refuse a proposal. if accept, delete all proposal with this offerId

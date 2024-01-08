@@ -222,3 +222,7 @@ export const offerDelete = async (req, res) => {
     res.status(500).json({ message });
   }
 };
+
+export const updateOfferGuardian = (offer, guardianId) => {
+  return offer.update({ guardianId });
+};

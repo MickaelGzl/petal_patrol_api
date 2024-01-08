@@ -17,7 +17,7 @@ export const users = [
   {
     email: "tata@pasmail.com",
     password: "toto",
-    name: "tata foConte",
+    name: "Jean propose",
     role: ["USER"],
     validate_account: false,
   },
@@ -46,6 +46,20 @@ export const plants = [
   {
     name: "racine",
     images: JSON.stringify(["uneUrl.jpg", "imagename2.png", "file3.jfif"]),
-    user: 2,
+    user: 1,
+  },
+];
+
+export const offers = [
+  {
+    description: "une nouvelle offre",
+    address: "123 rue de la vieille ville",
+    city: "montpellier",
+    zip: "34000",
+    coordinates: "{lat: 34.23, lng: 32.36}",
+    allow_advices: true,
+    date_from: "2024-01-08",
+    date_to: "2024-01-15",
+    plantId: 1,
   },
 ];
