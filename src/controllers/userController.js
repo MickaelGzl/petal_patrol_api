@@ -248,13 +248,14 @@ export const userUpdateName = async (req, res) => {
       return res.status(403).json({ message });
     }
 
-    const updatedUser = await updateUser(user, { name });
+    const updatedUser = await updateUser(user, { name, validate_account });
     message = "Mise à jour de l'utilisateur réussi.";
     res.json({
       message,
       user: {
         id: updatedUser.id,
         name: updatedUser.name,
+        validate_account: updatedUser.validate_account,
       },
     });
   } catch (error) {
@@ -483,25 +484,25 @@ export const userDeleteAvatar = async (req, res) => {
   }
 };
 
-export const userValidAccount = async (req, res) => {
-  let message;
-  try {
-    if (!req.user.role.includes("ADMIN")) {
-      message = "Vous n'avez pas les droits.";
-      return res.status(403).json({ message });
-    }
-    const user = await findUserById(req.params.id);
-    if (!user) {
-      message = "Aucune donnée trouvée pour l'identifiant fourni.";
-      return res.status(404).json({ message });
-    }
-    await validUser(user);
-    message = "Compte utilisateur actualisé.";
-    return res.json({ message, validate_account: user.validate_account });
-  } catch (error) {
-    console.error("<userController: userValidAccount>", error);
-    message =
-      "Une erreur est survenue lors de l'actualisation du statut du compte utilisateur";
-    return res.status(500).json({ message });
-  }
-};
+// export const userValidAccount = async (req, res) => {
+//   let message;
+//   try {
+//     if (!req.user.role.includes("ADMIN")) {
+//       message = "Vous n'avez pas les droits.";
+//       return res.status(403).json({ message });
+//     }
+//     const user = await findUserById(req.params.id);
+//     if (!user) {
+//       message = "Aucune donnée trouvée pour l'identifiant fourni.";
+//       return res.status(404).json({ message });
+//     }
+//     await validUser(user);
+//     message = "Compte utilisateur actualisé.";
+//     return res.json({ message, validate_account: user.validate_account });
+//   } catch (error) {
+//     console.error("<userController: userValidAccount>", error);
+//     message =
+//       "Une erreur est survenue lors de l'actualisation du statut du compte utilisateur";
+//     return res.status(500).json({ message });
+//   }
+// };
