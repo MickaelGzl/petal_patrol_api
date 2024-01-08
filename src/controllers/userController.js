@@ -243,7 +243,7 @@ export const userUpdateName = async (req, res) => {
     }
     const { name, validate_account } = req.body;
 
-    if (validate_account !== undefined && !req.user.roles.includes("ADMIN")) {
+    if (validate_account !== undefined && !req.user.role.includes("ADMIN")) {
       message = "Vous n'avez pas les droits";
       return res.status(403).json({ message });
     }
