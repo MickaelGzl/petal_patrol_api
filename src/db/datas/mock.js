@@ -2,13 +2,13 @@ export const users = [
   {
     email: "toto@mail.fr",
     password: "toto",
-    name: "toto",
+    name: "Toto plantu",
     role: ["USER"],
     validate_account: true,
   },
   {
     email: "toto@gmail.com",
-    name: "tonton google",
+    name: "toto freuh",
     password: "toto",
     googleId: "123",
     role: ["USER"],
@@ -46,6 +46,6 @@ export const plants = [
   {
     name: "racine",
     images: JSON.stringify(["uneUrl.jpg", "imagename2.png", "file3.jfif"]),
-    user: 1,
+    user: 2,
   },
 ];
