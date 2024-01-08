@@ -1,5 +1,5 @@
-import { Plant, Role, User } from "../server.js";
-import { users, roles, plants } from "./mock.js";
+import { Offer, Plant, Role, User } from "../server.js";
+import { users, roles, plants, offers } from "./mock.js";
 import { hashSync } from "bcrypt";
 
 export const createData = async () => {
@@ -26,6 +26,14 @@ export const createData = async () => {
     plants.map(async (plant) => {
       const newPlant = await Plant.create({ ...plant });
       newPlant.setUser(plant.user);
+    })
+  );
+
+  await Promise.all(
+    offers.map(async (offer) => {
+      const newOffer = await Offer.create({ ...offer });
+      newOffer.setPlant(offer.plantId);
+      newOffer.setOwner(1);
     })
   );
 };

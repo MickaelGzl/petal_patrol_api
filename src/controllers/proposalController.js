@@ -1,12 +1,15 @@
 import { verifyUserCanMakeAction } from "../config/authConfig.js";
 import { findOfferById } from "../queries/offerQueries.js";
 import {
+  createProposal,
+  deleteOfferProposals,
   deleteProposal,
   findProposalById,
   findProposalByOfferId,
   findProposalByUserId,
   updateProposal,
 } from "../queries/proposalQueries.js";
+import { updateOfferGuardian } from "./offerController.js";
 
 export const proposalByUser = async (req, res) => {
   let message;
@@ -57,7 +60,7 @@ export const proposalGetOne = async (req, res) => {
     }
 
     if (
-      proposal.userId !== req.user.id ||
+      proposal.userId !== req.user.id &&
       proposal.offer.ownerId !== req.user.id
     ) {
       message = "Vous n'avez pas les droits.";
@@ -169,12 +172,21 @@ export const proposalResponse = async (req, res) => {
 
     if (!acceptance) {
       await deleteProposal(req.params.id);
+      message = "La proposition selectionnée à bien été ";
     } else {
-      //update offer guardianId
-      //delete all proposal with this offerId
-      //set correct message in function
+      await updateOfferGuardian(
+        await findOfferById(proposal.offer.id),
+        proposal.userId
+      );
+
+      await deleteOfferProposals(proposal.offer.id);
     }
-    return res.json({ message: "coucou" });
+    message = `La proposition sélectionnée à bien été ${
+      !acceptance
+        ? "supprimée."
+        : "acceptée. Les autres seront automatiquement supprimées."
+    }`;
+    return res.json({ message });
   } catch (error) {
     console.error("<proposalController: proposalResponse>", error);
     message =

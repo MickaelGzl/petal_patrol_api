@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { Proposal } from "../db/server.js";
+import { Offer, Proposal, User } from "../db/server.js";
 
 export const findProposalByUserId = (userId) => {
   return Proposal.findAll({ where: { userId } });
@@ -54,4 +54,8 @@ export const updateProposal = (proposal, newValues) => {
 
 export const deleteProposal = (id) => {
   return Proposal.destroy({ where: { id } });
+};
+
+export const deleteOfferProposals = (offerId) => {
+  return Proposal.destroy({ where: { offerId } });
 };
