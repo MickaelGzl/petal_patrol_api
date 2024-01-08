@@ -3,11 +3,14 @@ import {
   ensureIsAuthenticated,
   ensureUserHaveRights,
 } from "../../config/authConfig.js";
+import { offerCreate, offerGetAll } from "../../controllers/offerController.js";
 
 export const router = Router();
 
-router.get("/all", ensureIsAuthenticated, ensureUserHaveRights, (req, res) =>
-  res.send("find all offer in app, including plant and user")
+router.get(
+  "/all",
+  ensureIsAuthenticated /*, ensureUserHaveRights*/,
+  offerGetAll
 );
 router.get("/", ensureIsAuthenticated, (req, res) =>
   res.send(
@@ -21,9 +24,7 @@ router.get("/:id", ensureIsAuthenticated, (req, res) =>
   res.send("find specific offer by id")
 );
 
-router.post("/", ensureIsAuthenticated, (req, res) =>
-  res.send("create an offer. Need to have a plant")
-);
+router.post("/", ensureIsAuthenticated, offerCreate);
 
 router.put(
   "/:id",

@@ -1,6 +1,6 @@
-import { verifyUserCanMakeAction } from "../config/authConfig";
-import { createOffer } from "../queries/offerQueries";
-import { findPlantById } from "../queries/plantQueries";
+import { verifyUserCanMakeAction } from "../config/authConfig.js";
+import { createOffer, findAllOffer } from "../queries/offerQueries.js";
+import { findPlantById } from "../queries/plantQueries.js";
 
 export const offerCreate = async (req, res) => {
   let message;
@@ -8,6 +8,7 @@ export const offerCreate = async (req, res) => {
     const {
       description,
       address,
+      city,
       zip,
       coordinates,
       allow_advices,
@@ -15,7 +16,7 @@ export const offerCreate = async (req, res) => {
       date_to,
       plantId,
     } = req.body;
-    if ((!address && !zip) || !coordinates) {
+    if (!address || !city || !zip || !coordinates) {
       message = "Aucune adresse renseignée.";
       return res.status(400).json({ message });
     }
@@ -30,6 +31,7 @@ export const offerCreate = async (req, res) => {
       {
         description,
         address,
+        city,
         zip,
         coordinates,
         allow_advices,
@@ -44,6 +46,19 @@ export const offerCreate = async (req, res) => {
   } catch (error) {
     console.error("<offerController: offerCreate>", error);
     message = "Erreur lors de la création de l'offre";
+    res.status(500).json({ message });
+  }
+};
+
+export const offerGetAll = async (req, res) => {
+  let message;
+  try {
+    const offers = await findAllOffer(req.query);
+    message = "La liste des offres à bien été récupérée.";
+    res.json({ message, offers });
+  } catch (error) {
+    console.error("<offerController: offerGetAll>", error);
+    message = "Erreur lors de la récupération de la liste des offres.";
     res.status(500).json({ message });
   }
 };
