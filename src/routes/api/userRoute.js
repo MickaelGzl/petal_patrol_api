@@ -14,6 +14,7 @@ import {
   userUpdateAvatar,
   userUpdateName,
   userValidateEmail,
+  userValidAccount,
 } from "../../controllers/userController.js";
 
 export const router = Router();
@@ -28,6 +29,7 @@ router.post("/reset-password/:id/:passwordToken", userResetPassword);
 router.put("/avatar", ensureIsAuthenticated, userUpdateAvatar);
 router.put("/email", ensureIsAuthenticated, userUpdateEmail);
 router.put("/:id", ensureIsAuthenticated, ensureUserHaveRights, userUpdateName);
+router.put("/:id/validate_account", ensureIsAuthenticated, userValidAccount);
 
 router.delete("/", ensureIsAuthenticated, userDelete);
 
