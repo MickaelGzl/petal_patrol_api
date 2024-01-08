@@ -109,6 +109,7 @@ const uploadPlantImages = async (req, res, next) => {
       next();
     });
   } catch (error) {
+    console.error("code: ", error.code);
     console.error("<plantController: uploadPlantImages>", error);
     message = "Une erreur est survenue lors du traitement des fichiers";
     res.status(500).json({ message });
@@ -174,7 +175,7 @@ export const plantAddImages = [
     const cancel = verifyUserCanMakeAction(plantToUpdate, req.user);
     if (cancel) {
       res.status(cancel.status).json({ message: cancel.message });
-      next(cancel.message);
+      next("<plantController: plantAddImages> ", cancel.message);
     } else {
       req.plant = plantToUpdate;
       next();
