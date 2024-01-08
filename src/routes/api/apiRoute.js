@@ -4,6 +4,7 @@ import { router as authRoute } from "./authRoute.js";
 import { router as plantRoute } from "./plantRoute.js";
 import { router as waitingBotanistRoute } from "./waitingBotanistRoute.js";
 import { router as dataRoute } from "./dataRoute.js";
+import { router as offerRoute } from "./offerRoute.js";
 import {
   ensureIsAuthenticated,
   ensureUserHaveRights,
@@ -14,6 +15,7 @@ export const router = Router();
 router.use("/auth", authRoute);
 router.use("/user", userRoute);
 router.use("/plant", plantRoute);
+router.use("/offer", offerRoute);
 router.use("/data", dataRoute);
 router.use(
   "/waiting-list",

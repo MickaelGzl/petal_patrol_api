@@ -31,6 +31,8 @@ export const ensureUserHaveRights = (req, res, next) => {
  * Verify is user can make modifications on Data (data is user's property or user is admin)
  * @param {Object} object the Object in database the user want to modify
  * @param {User} user the user store in req.user
+ * @param {boolean} AdminAuthorized can Admin access to the ressource and modify it
+ * @param {string | undefined} userIdFieldName if the userId field have another name (example: for offers: ownerId)
  * @returns Object with status 404 and message if object in param is undefined
  * @returns Object with status 403 if user can't make action
  * @returns null if ok
@@ -39,7 +41,8 @@ export const ensureUserHaveRights = (req, res, next) => {
 export const verifyUserCanMakeAction = (
   object,
   user,
-  AdminAuthorized = false
+  AdminAuthorized = false,
+  userIdFieldName = undefined
 ) => {
   if (!object) {
     return {
@@ -48,8 +51,10 @@ export const verifyUserCanMakeAction = (
     };
   }
 
+  const userIdField = userIdFieldName ? userIdFieldName : "userId";
+
   if (
-    object.userId === user.id ||
+    object[userIdField] === user.id ||
     (AdminAuthorized && user.role.includes("ADMIN"))
   ) {
     return null;

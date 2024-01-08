@@ -42,7 +42,7 @@ export const findAllPlants = (list, query) => {
       options.include[0].where = { name: { [Op.like]: `%${query.user}%` } };
     }
   } else if (list === "user") {
-    options = { ...options, where: { userId: query } };
+    options = { ...options, where: { userId: { [Op.eq]: query } } };
   }
 
   return Plant.findAll(options);

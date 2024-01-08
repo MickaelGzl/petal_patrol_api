@@ -24,11 +24,13 @@ export function applyAssociations(sequelize) {
     foreignKey: {
       name: "ownerId",
     },
+    as: "owner",
   });
   user.hasMany(offer, {
     foreignKey: {
       name: "guardianId",
     },
+    as: "guardian",
   });
   user.hasOne(waitingBotanist);
 
@@ -50,11 +52,13 @@ export function applyAssociations(sequelize) {
     foreignKey: {
       name: "ownerId",
     },
+    as: "owner",
   });
   offer.belongsTo(user, {
     foreignKey: {
       name: "guardianId",
     },
+    as: "guardian",
   });
 
   //Proposal associations
