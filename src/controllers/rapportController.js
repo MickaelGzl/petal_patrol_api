@@ -50,7 +50,7 @@ export const rapportGetAll = async (req, res) => {
     });
     message =
       "La liste des rapports enregistrés sur l'application à bien été récupérée.";
-    res.json({ message, rapports });
+    res.json({ message, rapports, imageRoute: "/images/rapports" });
   } catch (error) {
     console.error("<rapportController: rapportGetAll>", error);
     message = "Une erreur est survenue lors de la récupération des rapports.";
@@ -68,7 +68,11 @@ export const rapportGetMy = async (req, res) => {
     }
     const offerWithRapports = await Promise.all(
       offersUserIsGuardian.map(async (offer) => {
-        return { offer, rapports: await findRapportByOfferId(offer.id) };
+        return {
+          offer,
+          rapports: await findRapportByOfferId(offer.id),
+          imageRoute: "/images/rapports",
+        };
       })
     );
 
@@ -95,7 +99,13 @@ export const rapportByOfferId = async (req, res) => {
     }
     const rapports = findRapportByOfferId(offer.id);
     message = "La liste des rapports relative à l'offre à bien été récupérée.";
-    res.json({ message, rapports, offer });
+    res.json({
+      message,
+      rapports,
+      offer,
+      imageRouteRapport: "/images/rapports",
+      imageRouteOffer: "/images/offers",
+    });
   } catch (error) {
     console.error("<rapportController: rapportByOffer>", error);
     message =
@@ -138,7 +148,6 @@ export const rapportById = async (req, res) => {
 };
 
 export const rapportCreate = [
-  uploadRapportImages,
   async (req, res, next) => {
     let message;
     try {
@@ -186,7 +195,7 @@ export const rapportUpdate = async (req, res) => {
   try {
     const rapportToUpdate = await findRapportById(req.params.id);
     const cancel = verifyUserCanMakeAction(
-      rapportToUpdate,
+      rapportToUpdate.offer.dataValues,
       req.user,
       true,
       "guardianId"
@@ -199,10 +208,82 @@ export const rapportUpdate = async (req, res) => {
       rapport: req.body.rapport,
     });
     message = "Le rapport à été mis à jour.";
-    res.json({ message, rapport: rapportToUpdate });
+    res.json({ message, rapport: updatedRapport });
   } catch (error) {
     console.error("<rapportController: rapportUpdate>", error);
     message = "Une erreur est survenue lors de l'actualisation du rapport.";
     return res.status(500).json({ message });
   }
 };
+
+export const rapportUpdateImage = async (req, res) => [
+  async (req, res, next) => {
+    let message;
+    try {
+      const rapportToUpdate = await findRapportById(req.params.id);
+      const cancel = verifyUserCanMakeAction(
+        rapportToUpdate.offer.dataValues,
+        req.user,
+        true,
+        "guardianId"
+      );
+      if (cancel) {
+        message = cancel.message;
+        res.status(cancel.status).json({ message });
+        next(cancel.message);
+      }
+      req.rapport = rapportToUpdate;
+      next();
+    } catch (error) {
+      console.error("<rapportController: rapportUpdateImage>", error);
+      message =
+        "Une erreur est survenue lors de la vérification d'autorisation d'upload.";
+      return res.status(500).json({ message });
+    }
+  },
+  uploadRapportImages,
+  async (req, res) => {
+    let message;
+    try {
+      deleteFile("rapports", req.rapport.image);
+      const updatedRapport = await updateRapport(req.rapport, {
+        image: req.file.filename,
+      });
+      message = "Le rapport à été mis à jour.";
+      res.json({ message, rapport: updatedRapport });
+    } catch (error) {
+      console.error("<rapportController: rapportUpdateImage>", error);
+      message =
+        "Une erreur est survenue lors de l'actualisation de l'image du rapport.";
+      return res.status(500).json({ message });
+    }
+  },
+];
+
+export const rapportDelete = async (req, res) => {
+  let message;
+  try {
+    const rapport = await findRapportById(req.params.id);
+    const cancel = verifyUserCanMakeAction(
+      rapport.offer.datavalues,
+      req.user,
+      false,
+      "guardianId"
+    );
+    if (cancel) {
+      message = cancel.message;
+      res.status(cancel.status).json({ message });
+      next(cancel.message);
+    }
+    deleteFile("rapports", rapport.image);
+    await deleteRapport(rapport.id);
+    message = "Le rapport à bien été supprimé.";
+    res.json({ message, rapport });
+  } catch (error) {
+    console.error("<rapportController: rapportDelete>", error);
+    message = "Une erreur est survenue lors de la suppression du rapport.";
+    return res.status(500).json({ message });
+  }
+};
+
+//manque suppression des images

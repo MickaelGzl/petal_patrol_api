@@ -71,6 +71,12 @@ app
       join(fileURLToPath(import.meta.url), "../public/assets/plants")
     )
   )
+  .use(
+    "/images/rapports",
+    express.static(
+      join(fileURLToPath(import.meta.url), "../public/assets/rapports")
+    )
+  )
   .use(router);
 
 const port = process.env.PORT || 3000;

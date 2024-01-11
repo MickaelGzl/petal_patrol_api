@@ -9,6 +9,8 @@ import {
   rapportCreate,
   rapportGetAll,
   rapportGetMy,
+  rapportUpdate,
+  rapportUpdateImage,
 } from "../../controllers/rapportController.js";
 
 export const router = Router();
@@ -20,9 +22,8 @@ router.get("/:id", ensureIsAuthenticated, rapportById);
 
 router.post("/:id", ensureIsAuthenticated, rapportCreate);
 
-router.put("/:id", ensureIsAuthenticated, (req, res) => {
-  res.send("update rapport with id. Need to be owner");
-});
+router.put("/:id", ensureIsAuthenticated, rapportUpdate);
+router.put("/:id/image", ensureIsAuthenticated, rapportUpdateImage);
 
 router.delete("/:id", ensureIsAuthenticated, (req, res) =>
   res.send("delete rapport with id. Need to be owner")
