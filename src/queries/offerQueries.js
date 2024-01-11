@@ -7,12 +7,12 @@ const DEFAULT_OPTIONS = {
     {
       model: User,
       as: "owner",
-      attributes: ["name", "email", "id"],
+      attributes: ["name", "avatar", "id"],
     },
     {
       model: User,
       as: "guardian",
-      attributes: ["name", "email", "id"],
+      attributes: ["name", "avatar", "id"],
     },
     {
       model: Plant,
