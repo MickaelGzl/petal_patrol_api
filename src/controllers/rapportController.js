@@ -97,14 +97,13 @@ export const rapportByOfferId = async (req, res) => {
       message = cancel.message;
       return res.status(cancel.status).json({ message });
     }
-    const rapports = findRapportByOfferId(offer.id);
+    const rapports = await findRapportByOfferId(offer.id);
     message = "La liste des rapports relative à l'offre à bien été récupérée.";
     res.json({
       message,
       rapports,
       offer,
       imageRouteRapport: "/images/rapports",
-      imageRouteOffer: "/images/offers",
     });
   } catch (error) {
     console.error("<rapportController: rapportByOffer>", error);
@@ -121,13 +120,13 @@ export const rapportById = async (req, res) => {
 
     const cancel =
       verifyUserCanMakeAction(
-        rapport.offer.dataValues,
+        rapport && rapport.offer.dataValues,
         req.user,
         true,
         "ownerId"
       ) &&
       verifyUserCanMakeAction(
-        rapport.offer.dataValues,
+        rapport && rapport.offer.dataValues,
         req.user,
         true,
         "guardianId"
@@ -137,8 +136,7 @@ export const rapportById = async (req, res) => {
       return res.status(cancel.status).json({ message });
     }
     delete rapport.offer;
-    message =
-      "Le rapport à bien été récupéré. Pense à vérifier qu'il à le droit de le visionner";
+    message = "Le rapport à bien été récupéré.";
     res.json({ message, rapport });
   } catch (error) {
     console.error("<rapportController: rapportById>", error);
@@ -176,6 +174,10 @@ export const rapportCreate = [
   async (req, res) => {
     let message;
     try {
+      if (!req.file) {
+        message = "Vous devez ajouter une image pour enregistrer un rapport";
+        return res.status(400).json({ message });
+      }
       const newRapport = await createRapport(
         { rapport: req.body.rapport, image: req.file.filename },
         req.offer.id
@@ -195,7 +197,7 @@ export const rapportUpdate = async (req, res) => {
   try {
     const rapportToUpdate = await findRapportById(req.params.id);
     const cancel = verifyUserCanMakeAction(
-      rapportToUpdate.offer.dataValues,
+      rapportToUpdate && rapportToUpdate.offer.dataValues,
       req.user,
       true,
       "guardianId"
@@ -222,7 +224,7 @@ export const rapportUpdateImage = async (req, res) => [
     try {
       const rapportToUpdate = await findRapportById(req.params.id);
       const cancel = verifyUserCanMakeAction(
-        rapportToUpdate.offer.dataValues,
+        rapportToUpdate && rapportToUpdate.offer.dataValues,
         req.user,
         true,
         "guardianId"
@@ -265,7 +267,7 @@ export const rapportDelete = async (req, res) => {
   try {
     const rapport = await findRapportById(req.params.id);
     const cancel = verifyUserCanMakeAction(
-      rapport.offer.datavalues,
+      rapport && rapport.offer.datavalues,
       req.user,
       false,
       "guardianId"
@@ -285,5 +287,3 @@ export const rapportDelete = async (req, res) => {
     return res.status(500).json({ message });
   }
 };
-
-//manque suppression des images
