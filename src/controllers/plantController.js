@@ -78,7 +78,14 @@ export const plantById = async (req, res) => {
       return res.status(cancel.status).json({ message });
     }
     message = "La plante correspondante à bien été récupérée.";
-    res.json({ message, plant });
+    res.json({
+      message,
+      plant: {
+        ...plant.dataValues,
+        images: JSON.parse(plant.images),
+        imageRoute: "/images/plants",
+      },
+    });
   } catch (error) {
     console.error("<plantController: plantById>", error);
     message = "Erreur lors de la récupération de la plante";

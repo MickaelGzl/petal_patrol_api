@@ -17,7 +17,7 @@ export const router = Router();
 
 router.get("/all", ensureIsAuthenticated, ensureUserHaveRights, offerGetAll);
 router.get("/", ensureIsAuthenticated, offerGetAll);
-router.get("/my-offers", ensureIsAuthenticated, offerGetMy);
+router.get("/my", ensureIsAuthenticated, offerGetMy);
 router.get("/:id", ensureIsAuthenticated, offerGetOne);
 
 router.post("/", ensureIsAuthenticated, offerCreate);

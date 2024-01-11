@@ -7,12 +7,12 @@ const DEFAULT_OPTIONS = {
     {
       model: User,
       as: "owner",
-      attributes: ["name", "email", "id"],
+      attributes: ["name", "avatar", "id"],
     },
     {
       model: User,
       as: "guardian",
-      attributes: ["name", "email", "id"],
+      attributes: ["name", "avatar", "id"],
     },
     {
       model: Plant,
@@ -78,6 +78,13 @@ export const findOfferByUserId = (query, userId) => {
   }
 
   return Offer.findAll(options);
+};
+
+export const findOfferByGuardianId = (userId) => {
+  return Offer.findAll({
+    ...DEFAULT_OPTIONS,
+    where: { guardianId: { [Op.eq]: userId } },
+  });
 };
 
 /**

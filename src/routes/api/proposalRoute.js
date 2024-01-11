@@ -12,7 +12,7 @@ import {
 
 export const router = Router();
 
-router.get("/my-proposals", ensureIsAuthenticated, proposalByUser);
+router.get("/my", ensureIsAuthenticated, proposalByUser);
 router.get("/offer/:id", ensureIsAuthenticated, proposalByOffer);
 router.get("/:id", ensureIsAuthenticated, proposalGetOne);
 
@@ -22,5 +22,3 @@ router.put("/:id", ensureIsAuthenticated, proposalUpdate);
 router.put("/:id/response", ensureIsAuthenticated, proposalResponse);
 
 router.delete("/:id", ensureIsAuthenticated, proposalDelete);
-
-//user can accept or refuse a proposal. if accept, delete all proposal with this offerId

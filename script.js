@@ -12,6 +12,7 @@ const folderPaths = [
   join(pathToSrc, "/db/database"),
   join(pathToSrc, "../public/assets/users"),
   join(pathToSrc, "../public/assets/plants"),
+  join(pathToSrc, "../public/assets/rapports"),
 ];
 
 // const pathToFolder = join(fileURLToPath(import.meta.url), "../src/db/database");

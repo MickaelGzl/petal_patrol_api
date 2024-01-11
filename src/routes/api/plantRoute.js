@@ -17,7 +17,7 @@ import {
 export const router = Router();
 
 router.get("/", ensureIsAuthenticated, ensureUserHaveRights, plantFindAll);
-router.get("/my-plants", ensureIsAuthenticated, plantByUser);
+router.get("/my", ensureIsAuthenticated, plantByUser);
 router.get("/:id", ensureIsAuthenticated, plantById);
 
 router.post("/", ensureIsAuthenticated, plantCreate);
