@@ -80,6 +80,13 @@ export const findOfferByUserId = (query, userId) => {
   return Offer.findAll(options);
 };
 
+export const findOfferByGuardianId = (userId) => {
+  return Offer.findAll({
+    ...DEFAULT_OPTIONS,
+    where: { guardianId: { [Op.eq]: userId } },
+  });
+};
+
 /**
  * find all offer corresponding to a plant
  */
