@@ -7,6 +7,7 @@ import { router as dataRoute } from "./dataRoute.js";
 import { router as offerRoute } from "./offerRoute.js";
 import { router as proposalRoute } from "./proposalRoute.js";
 import { router as rapportRoute } from "./rapportRoute.js";
+import { router as commentRoute } from "./commentRoute.js";
 import {
   ensureIsAuthenticated,
   ensureUserHaveRights,
@@ -20,6 +21,7 @@ router.use("/plant", plantRoute);
 router.use("/offer", offerRoute);
 router.use("/proposal", proposalRoute);
 router.use("/rapport", rapportRoute);
+router.use("/comment", commentRoute);
 router.use("/data", dataRoute);
 router.use(
   "/waiting-list",

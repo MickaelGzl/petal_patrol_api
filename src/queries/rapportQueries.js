@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { Offer, Rapport } from "../db/server.js";
+import { Comment, Offer, Rapport, User } from "../db/server.js";
 
 export const findAllRapport = (page) => {
   if (!page) {
@@ -20,6 +20,15 @@ export const findRapportById = (id) => {
         model: Offer,
         attributes: ["guardianId", "ownerId"],
       },
+      {
+        model: Comment,
+        include: [
+          {
+            model: User,
+            attributes: ["id", "name", "avatar"],
+          },
+        ],
+      },
     ],
   };
   return Rapport.findOne(options);
@@ -32,5 +41,5 @@ export const createRapport = async (rapport, offerId) => {
 };
 
 export const updateRapport = (rapport, newValues) => {
-  return Rapport.update(newValues);
+  return rapport.update(newValues);
 };

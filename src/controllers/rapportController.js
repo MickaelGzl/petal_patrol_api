@@ -131,7 +131,7 @@ export const rapportById = async (req, res) => {
         true,
         "guardianId"
       );
-    if (cancel) {
+    if (cancel && !req.user.role.include("BOTANIST")) {
       message = cancel.message;
       return res.status(cancel.status).json({ message });
     }
@@ -218,7 +218,7 @@ export const rapportUpdate = async (req, res) => {
   }
 };
 
-export const rapportUpdateImage = async (req, res) => [
+export const rapportUpdateImage = [
   async (req, res, next) => {
     let message;
     try {
@@ -262,28 +262,28 @@ export const rapportUpdateImage = async (req, res) => [
   },
 ];
 
-export const rapportDelete = async (req, res) => {
-  let message;
-  try {
-    const rapport = await findRapportById(req.params.id);
-    const cancel = verifyUserCanMakeAction(
-      rapport && rapport.offer.datavalues,
-      req.user,
-      false,
-      "guardianId"
-    );
-    if (cancel) {
-      message = cancel.message;
-      res.status(cancel.status).json({ message });
-      next(cancel.message);
-    }
-    deleteFile("rapports", rapport.image);
-    await deleteRapport(rapport.id);
-    message = "Le rapport à bien été supprimé.";
-    res.json({ message, rapport });
-  } catch (error) {
-    console.error("<rapportController: rapportDelete>", error);
-    message = "Une erreur est survenue lors de la suppression du rapport.";
-    return res.status(500).json({ message });
-  }
-};
+// export const rapportDelete = async (req, res) => {
+//   let message;
+//   try {
+//     const rapport = await findRapportById(req.params.id);
+//     const cancel = verifyUserCanMakeAction(
+//       rapport && rapport.offer.datavalues,
+//       req.user,
+//       false,
+//       "guardianId"
+//     );
+//     if (cancel) {
+//       message = cancel.message;
+//       res.status(cancel.status).json({ message });
+//       next(cancel.message);
+//     }
+//     deleteFile("rapports", rapport.image);
+//     await deleteRapport(rapport.id);
+//     message = "Le rapport à bien été supprimé.";
+//     res.json({ message, rapport });
+//   } catch (error) {
+//     console.error("<rapportController: rapportDelete>", error);
+//     message = "Une erreur est survenue lors de la suppression du rapport.";
+//     return res.status(500).json({ message });
+//   }
+// };

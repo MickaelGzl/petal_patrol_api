@@ -113,3 +113,19 @@ export const updateOffer = async (offer, newValues) => {
 export const deleteOffer = (id) => {
   return Offer.destroy({ where: { id } });
 };
+
+export const findCurrentOfferWithUser = (userId) => {
+  const options = {
+    where: {
+      guardianId: { [Op.not]: null },
+      date_to: { [Op.gte]: Date.now() - (1000 * 60 * 60 * 24 - 3) },
+      [Op.or]: [
+        { ownerId: { [Op.eq]: userId } },
+        { guardianId: { [Op.eq]: userId } },
+      ],
+    },
+    attributes: ["id"],
+  };
+
+  return Offer.findAll(options);
+};
