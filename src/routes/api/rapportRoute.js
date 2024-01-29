@@ -7,7 +7,7 @@ import {
   rapportById,
   rapportByOfferId,
   rapportCreate,
-  rapportDelete,
+  // rapportDelete,
   rapportGetAll,
   rapportGetMy,
   rapportUpdate,
@@ -26,4 +26,4 @@ router.post("/:id", ensureIsAuthenticated, rapportCreate);
 router.put("/:id", ensureIsAuthenticated, rapportUpdate);
 router.put("/:id/image", ensureIsAuthenticated, rapportUpdateImage);
 
-router.delete("/:id", ensureIsAuthenticated, rapportDelete);
+// router.delete("/:id", ensureIsAuthenticated, rapportDelete);

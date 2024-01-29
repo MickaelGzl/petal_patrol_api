@@ -21,6 +21,13 @@ export const sequelize = new Sequelize({
   logging: false,
 });
 
+// export const sequelize = new Sequelize("epsi-mspr", "root", "", {
+//   host: "localhost",
+//   dialect:
+//     "mysql" /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */,
+//   logging: false,
+// });
+
 //declare models
 export const User = UserModel(sequelize, DataTypes);
 export const Role = RoleModel(sequelize, DataTypes);
