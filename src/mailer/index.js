@@ -14,21 +14,23 @@ class Email {
   constructor() {
     this.from = "Petal Patrol <noreply@petal-patrol.fr>";
 
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV.trim() === "production") {
+      console.log(Boolean(""));
       this.transporter = nodemailer.createTransport({
         service: "gmail",
-        host: process.env.NODEMAILER_HOST,
-        port: process.env.NODEMAILER_PORT,
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
         secure: true,
         auth: {
-          user: process.env.NODEMAILER_USER,
-          pass: process.env.NODEMAILER_PASSWORD,
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
         },
         tls: {
-          rejectUnauthorized: process.env.TLS_REJECT,
+          rejectUnauthorized: Boolean(process.env.TLS_REJECT),
         },
       });
     } else {
+      console.log("email:", process.env.NODE_ENV);
       this.transporter = nodemailer.createTransport({
         //configure a mail tester for dev version, to not degrade our reputation
         host: process.env.NODEMAILER_HOST,
@@ -52,16 +54,13 @@ class Email {
           join(this.mailerPath, "/templates/resetPasswordTemplate.pug"),
           {
             email: options.to,
-            url: `${options.url}/user/reset-password/${options.userId}/${options.token}/${options.serverToken}`,
+            url: `${options.url}/views/reset-password/${options.userId}/${options.token}/${options.serverToken}`,
           }
         ),
         attachments: [
           {
             filename: "grainou.png",
-            path: join(
-              this.mailerPath,
-              "../assets/images/grainou_la_graine.png"
-            ),
+            path: `${options.url}/images/images/grainou_la_graine.png`,
             cid: "unique@cid.ee",
           },
         ],
@@ -82,16 +81,13 @@ class Email {
           join(this.mailerPath, "/templates/validateEmailTemplate.pug"),
           {
             email: options.to,
-            url: `${options.url}/auth/${options.token}`,
+            url: `${options.url}/api/user/validate/${options.token}/${options.serverToken}`,
           }
         ),
         attachments: [
           {
             filename: "grainou.png",
-            path: join(
-              this.mailerPath,
-              "../assets/images/grainou_la_graine.png"
-            ),
+            path: `${options.url}/images/images/grainou_la_graine.png`,
             cid: "unique@cid.ee",
           },
         ],

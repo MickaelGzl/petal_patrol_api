@@ -18,15 +18,8 @@ dotenv.config();
 const app = express();
 
 //to have a view on template emails
-
-// app.set("view engine", "pug");
-// app.set(
-//   "views",
-//   join(fileURLToPath(import.meta.url), "../src/mailer/templates")
-// );
-// app.use(
-//   express.static(join(fileURLToPath(import.meta.url), "../src/assets/images"))
-// );
+app.set("view engine", "pug");
+app.set("views", join(fileURLToPath(import.meta.url), "../src/views/"));
 
 process.env.CSRF_SECRET = createCsrfSecret();
 
