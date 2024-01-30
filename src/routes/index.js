@@ -9,10 +9,10 @@ export const router = Router();
 
 router.use("/api", apiRoute);
 
-//to have a view on template emails
-// router.get("/test", (req, res) => {
-//   res.render("resetPasswordTemplate", { email: "toto", url: "tata" });
-// });
+// to have a view on template emails
+router.get("/test", (req, res) => {
+  res.render("resetPasswordForm");
+});
 
 router.use("*", (req, res) => {
   res.status(404).json({ message: "no route corresponding" });

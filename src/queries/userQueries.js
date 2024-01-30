@@ -81,7 +81,7 @@ export const createUser = async (user, role) => {
   const newUser = await User.create({
     ...user,
     password: hashedPassword,
-    validate_account: true, //TODO: remove this before prod
+    validate_account: false, //pass true for tests
   });
   newUser.addRole(role);
   return invalidUser(newUser);
@@ -113,7 +113,7 @@ export const comparePasswords = (password, hashedPassword) => {
  *
  */
 export const findUserByToken = (token) => {
-  return User.find({ activation_token: { [Op.eq]: token } });
+  return User.findOne({ activation_token: { [Op.eq]: token } });
 };
 /**
  * take request and update the user

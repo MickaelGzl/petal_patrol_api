@@ -14,7 +14,10 @@ import {
   updateAvatar,
   validUser,
 } from "../queries/userQueries.js";
-import { createTokenFromSecret } from "../config/csrfConfig.js";
+import {
+  createTokenFromSecret,
+  validateTokenWithSecret,
+} from "../config/csrfConfig.js";
 import { emailFactory } from "../mailer/index.js";
 import { createWaitingBotanist } from "../queries/waitingBotanistQueries.js";
 import { verifyUserCanMakeAction } from "../config/authConfig.js";
@@ -46,11 +49,13 @@ export const userCreate = async (req, res) => {
       message =
         "Enregistré avec succès. En attente de validation de l'administrateur";
     } else {
-      // emailFactory.sendEmailVerificationLink({
-      //   to: req.body.email,
-      //   url: req.headers.origin,
-      //   token: user.activation_token,
-      // });
+      const token = createTokenFromSecret(process.env.CSRF_SECRET);
+      emailFactory.sendEmailVerificationLink({
+        to: req.body.email,
+        url: `${req.protocol}://${req.get("host")}`,
+        token: user.activation_token,
+        serverToken: token,
+      });
       message =
         "Enregistré avec succès. Veuillez vérifier vos mails afin de valider votre compte avant de vous connecter.";
     }
@@ -96,10 +101,16 @@ export const userSignIn = async (req, res) => {
     const userRoles = (await findRoleByUserId(user.id)).map(
       (role) => role.role
     );
-    if (userRoles.includes("BOTANIST") && user.validate_account === false) {
-      message = "Votre compte n'a pas encore été validé par l'administrateur";
+    if (!user.validate_account) {
+      message = userRoles.includes("BOTANIST")
+        ? "Votre compte n'a pas encore été validé par l'administrateur"
+        : "Vous devez valider votre mail pour continuer sur l'application.";
       return res.status(403).json({ message });
     }
+    // if (userRoles.includes("BOTANIST") && user.validate_account === false) {
+    //   message = "Votre compte n'a pas encore été validé par l'administrateur";
+    //   return res.status(403).json({ message });
+    // }
     req.login(user);
     user.lastLog = new Date(Date.now());
     user.deletedOn = null;
@@ -153,7 +164,8 @@ export const userValidateEmail = async (req, res) => {
       return res.status(404).json({ message });
     }
     await validUser(user);
-    message = "Le compte est désormais valide.";
+    message =
+      "Le compte est désormais valide. Vous pouvez vous connecter sur l'application";
     return res.json({ message });
   } catch (error) {
     console.error("<userController: userValidateEmail>", error);
@@ -277,12 +289,17 @@ export const userUpdateEmail = async (req, res) => {
     const user = await findUserById(req.user.id);
     const { email } = req.body;
     const updatedUser = await updateUser(user, { email });
-    // emailFactory.sendEmailVerificationLink({
-    //   to: email,
-    //   url: req.headers.origin,
-    //   token: updatedUser.activation_token,
-    // });
-    message = "Mise à jour de l'utilisateur réussi.";
+
+    const token = createTokenFromSecret(process.env.CSRF_SECRET);
+    emailFactory.sendEmailVerificationLink({
+      to: email,
+      url: `${req.protocol}://${req.get("host")}`,
+      token: updatedUser.activation_token,
+      serverToken: token,
+    });
+
+    message =
+      "Mise à jour de l'utilisateur réussi. Merci de valider votre nouvelle adresse mail.";
     res.json({
       message,
       user: {
@@ -345,7 +362,7 @@ export const userPasswordForgot = async (req, res) => {
 
     emailFactory.sendResetPasswordLink({
       to: email,
-      url: req.headers.origin,
+      url: `${req.protocol}://${req.get("host")}`,
       userId: user.id,
       token: user.password_token,
       serverToken: token,

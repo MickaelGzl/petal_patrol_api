@@ -24,7 +24,7 @@ export const sequelize = new Sequelize({
 // export const sequelize = new Sequelize("epsi-mspr", "root", "", {
 //   host: "localhost",
 //   dialect:
-//     "mysql" /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */,
+//     "mysql",
 //   logging: false,
 // });
 
