@@ -19,6 +19,7 @@ export const app = express();
 // module.exports.app = app;
 
 //to have a view on template emails
+app.use(express.static("public"));
 app.set("view engine", "pug");
 app.set("views", join(fileURLToPath(import.meta.url), "../src/views/"));
 

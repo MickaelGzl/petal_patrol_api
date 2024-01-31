@@ -153,6 +153,7 @@ export const userValidateEmail = async (req, res) => {
   try {
     if (
       !req.params.serverToken ||
+      !req.params.token ||
       !validateTokenWithSecret(process.env.CSRF_SECRET, req.params.serverToken)
     ) {
       message = "Token invalide";
@@ -386,8 +387,9 @@ export const userResetPassword = async (req, res) => {
   try {
     const { id, passwordToken } = req.params;
     const { password } = req.body;
+
     const user = await findUserById(id);
-    if (!user) {
+    if (!user || !password) {
       message = "Impossible de modifier votre mot de passe";
     } else if (
       user.password_token !== passwordToken ||
@@ -401,9 +403,9 @@ export const userResetPassword = async (req, res) => {
       return res.status(404).json({ message });
     }
 
+    user.password = await hashPassword(password);
     user.password_token = null;
     user.password_token_expiration = null;
-    user.password = await hashPassword(password);
     await user.save();
     message =
       "Votre mot de passe à été modifié avec succès. Vous pouvez des à présent vous reconnecter avec votre nouveau mot de passe";

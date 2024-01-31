@@ -81,22 +81,22 @@ export const createUser = async (user, role) => {
   const newUser = await User.create({
     ...user,
     password: hashedPassword,
-    validate_account: false, //pass true for tests
   });
   newUser.addRole(role);
   return invalidUser(newUser);
 };
 
 export const invalidUser = (user) => {
-  user.validate_account = true;
+  user.validate_account = false; //pass to false after tests
   user.activation_token = uuidv4();
   return user.save();
 };
 
-export const validUser = (user) => {
+export const validUser = async (user) => {
   user.validate_account = true;
   user.activation_token = "";
-  return user.save();
+  await user.save();
+  return user;
 };
 
 /**
@@ -113,7 +113,7 @@ export const comparePasswords = (password, hashedPassword) => {
  *
  */
 export const findUserByToken = (token) => {
-  return User.findOne({ activation_token: { [Op.eq]: token } });
+  return User.findOne({ where: { activation_token: { [Op.eq]: token } } });
 };
 /**
  * take request and update the user
