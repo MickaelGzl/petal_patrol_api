@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node script.js && set NODE_ENV=development && nodemon app.js",
     "start": "node script.js && set NODE_ENV=production && nodemon app.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --detectOpenHandles"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
+    "lint": "eslint **/*.js"
   },
   "repository": {
     "type": "git",
@@ -22,13 +23,10 @@
   "homepage": "https://github.com/MickaelGzl/petal_patrol_api#readme",
   "devDependencies": {
     "@babel/preset-env": "^7.23.9",
-    "@types/chai-http": "^4.2.0",
     "babel-jest": "^29.7.0",
-    "chai": "^4.2.0",
-    "chai-http": "^4.4.0",
+    "eslint": "^8.56.0",
     "esm": "^3.2.25",
     "jest": "^29.7.0",
-    "mocha": "^10.2.0",
     "nodemon": "^3.0.2",
     "supertest": "^6.3.4"
   },

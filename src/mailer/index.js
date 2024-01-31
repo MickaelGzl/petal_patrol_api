@@ -45,57 +45,57 @@ class Email {
 
   async sendResetPasswordLink(options) {
     // const mailerPath = join(fileURLToPath(import.meta.url), "../");
-    try {
-      await this.transporter.sendMail({
-        from: this.from,
-        to: options.to,
-        subject: "Réinitialisation de votre mot de passe.",
-        html: pug.renderFile(
-          join(this.mailerPath, "/templates/resetPasswordTemplate.pug"),
-          {
-            email: options.to,
-            url: `${options.url}/views/reset-password/${options.userId}/${options.token}/${options.serverToken}`,
-          }
-        ),
-        attachments: [
-          {
-            filename: "grainou.png",
-            path: `${options.url}/images/images/grainou_la_graine.png`,
-            cid: "unique@cid.ee",
-          },
-        ],
-      });
-      console.log("an email was sent for password reset");
-    } catch (error) {
-      throw error;
-    }
+    // try {
+    await this.transporter.sendMail({
+      from: this.from,
+      to: options.to,
+      subject: "Réinitialisation de votre mot de passe.",
+      html: pug.renderFile(
+        join(this.mailerPath, "/templates/resetPasswordTemplate.pug"),
+        {
+          email: options.to,
+          url: `${options.url}/views/reset-password/${options.userId}/${options.token}/${options.serverToken}`,
+        }
+      ),
+      attachments: [
+        {
+          filename: "grainou.png",
+          path: `${options.url}/images/images/grainou_la_graine.png`,
+          cid: "unique@cid.ee",
+        },
+      ],
+    });
+    console.log("an email was sent for password reset");
+    // } catch (error) {
+    //   throw error;
+    // }
   }
 
   async sendEmailVerificationLink(options) {
-    try {
-      await this.transporter.sendMail({
-        from: this.from,
-        to: options.to,
-        subject: "Vérification de votre adresse email.",
-        html: pug.renderFile(
-          join(this.mailerPath, "/templates/validateEmailTemplate.pug"),
-          {
-            email: options.to,
-            url: `${options.url}/api/user/validate/${options.token}/${options.serverToken}`,
-          }
-        ),
-        attachments: [
-          {
-            filename: "grainou.png",
-            path: `${options.url}/images/images/grainou_la_graine.png`,
-            cid: "unique@cid.ee",
-          },
-        ],
-      });
-      console.log("an email was sent for email vérification");
-    } catch (error) {
-      throw error;
-    }
+    // try {
+    await this.transporter.sendMail({
+      from: this.from,
+      to: options.to,
+      subject: "Vérification de votre adresse email.",
+      html: pug.renderFile(
+        join(this.mailerPath, "/templates/validateEmailTemplate.pug"),
+        {
+          email: options.to,
+          url: `${options.url}/api/user/validate/${options.token}/${options.serverToken}`,
+        }
+      ),
+      attachments: [
+        {
+          filename: "grainou.png",
+          path: `${options.url}/images/images/grainou_la_graine.png`,
+          cid: "unique@cid.ee",
+        },
+      ],
+    });
+    console.log("an email was sent for email vérification");
+    // } catch (error) {
+    //   throw error;
+    // }
   }
 }
 

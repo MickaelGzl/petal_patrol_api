@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { Plant } from "../db/server.js";
+import { Plant, User } from "../db/server.js";
 
 /**
  * search all plants in db, can include filters

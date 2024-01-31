@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   ensureIsAuthenticated,
-  ensureUserHaveRights,
+  // ensureUserHaveRights,
 } from "../../config/authConfig.js";
 import {
   commentCreate,

@@ -1,4 +1,4 @@
-import { UUIDV4 } from "sequelize";
+// import { UUIDV4 } from "sequelize";
 
 export const UserModel = (sequelize, DataTypes) => {
   return sequelize.define(

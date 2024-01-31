@@ -4,6 +4,39 @@ import { findRoleByUserId } from "../queries/roleQueries.js";
 import { findAllPlants } from "../queries/plantQueries.js";
 import { sequelize } from "../db/server.js";
 
+async function createTable(doc, data) {
+  let options = null;
+  if (data instanceof sequelize.models.user) {
+    options = {
+      title: "Information compte utilisateur",
+      headers: ["identifiant", "nom d'utilisateur", "email", "avatar"],
+      rows: [[data.id, data.name, data.email, data.avatar || "null"]],
+    };
+  } else if (data[0] instanceof sequelize.models.role) {
+    options = {
+      title: "Rôle compte utilisateur",
+      headers: [{ label: "role", property: "role" }],
+      datas: data,
+    };
+  } else if (data[0] instanceof sequelize.models.plant) {
+    options = {
+      title: "Plantes enregistrées par l'utilisateur",
+      headers: [
+        { label: "name", property: "name" },
+        { label: "type", property: "type" },
+      ],
+      datas: data,
+    };
+  } else {
+    console.log("empty datas or unknow model");
+    console.log(data);
+  }
+
+  if (options) {
+    await doc.table(options);
+  }
+}
+
 /**
  * get user and all data related to him
  * prepare a pdf file and stock all info in tables
@@ -39,40 +72,7 @@ export const dataUserSend = async (req, res) => {
       findAllPlants("user", id),
     ]);
 
-    async function createTable(data) {
-      let options = null;
-      if (data instanceof sequelize.models.user) {
-        options = {
-          title: "Information compte utilisateur",
-          headers: ["identifiant", "nom d'utilisateur", "email", "avatar"],
-          rows: [[data.id, data.name, data.email, data.avatar || "null"]],
-        };
-      } else if (data[0] instanceof sequelize.models.role) {
-        options = {
-          title: "Rôle compte utilisateur",
-          headers: [{ label: "role", property: "role" }],
-          datas: data,
-        };
-      } else if (data[0] instanceof sequelize.models.plant) {
-        options = {
-          title: "Plantes enregistrées par l'utilisateur",
-          headers: [
-            { label: "name", property: "name" },
-            { label: "type", property: "type" },
-          ],
-          datas: data,
-        };
-      } else {
-        console.log("empty datas or unknow model");
-        console.log(data);
-      }
-
-      if (options) {
-        await doc.table(options);
-      }
-    }
-
-    datas.forEach((data) => createTable(data));
+    datas.forEach((data) => createTable(doc, data));
 
     doc.end();
 
