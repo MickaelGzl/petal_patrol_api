@@ -10,8 +10,12 @@ export const router = Router();
 router.use("/api", apiRoute);
 
 // to have a view on template emails
-router.get("/test", (req, res) => {
+router.get("/reset-password", (req, res) => {
   res.render("resetPasswordForm");
+});
+
+router.get("/test", (req, res) => {
+  res.json({ message: "coucou" });
 });
 
 router.use("*", (req, res) => {

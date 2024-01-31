@@ -14,7 +14,7 @@ class Email {
   constructor() {
     this.from = "Petal Patrol <noreply@petal-patrol.fr>";
 
-    if (process.env.NODE_ENV.trim() === "production") {
+    if (process.env.NODE_ENV && process.env.NODE_ENV.trim() === "production") {
       console.log(Boolean(""));
       this.transporter = nodemailer.createTransport({
         service: "gmail",
