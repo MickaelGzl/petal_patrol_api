@@ -15,7 +15,8 @@ import { router } from "./src/routes/index.js";
 
 dotenv.config();
 
-const app = express();
+export const app = express();
+// module.exports.app = app;
 
 //to have a view on template emails
 app.set("view engine", "pug");
@@ -83,3 +84,6 @@ app.listen(port, () =>
 //si un fichier est invalide je ne peux plus accéder a aucune route
 
 //validate_account = n'empeche pas de se connecter mais d'enregistrer des offres ou de répondres à celles ci
+
+//voir doc jest pour séparer app et serveur
+//invalid user return true a validate_account pour test, l'enlever, et remettre le mail dans create user

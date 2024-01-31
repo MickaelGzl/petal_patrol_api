@@ -88,7 +88,7 @@ export const createUser = async (user, role) => {
 };
 
 export const invalidUser = (user) => {
-  user.validate_account = false;
+  user.validate_account = true;
   user.activation_token = uuidv4();
   return user.save();
 };
