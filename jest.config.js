@@ -4,7 +4,7 @@
  */
 
 export default {
-  transform: {},
+  // transform: {},
   testEnvironment: "node",
   transform: {
     "^.+\\.js$": "babel-jest", // Utilisez babel-jest pour transpiler le code ES6

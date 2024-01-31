@@ -1,28 +1,3 @@
-// import * as chai from "chai";
-// import chaiHttp from "chai-http";
-// import { app } from "../../app.js";
-
-// // console.log(chai);
-// // console.log(chaiHttp);
-// chai.should();
-// chai.use(chaiHttp);
-
-// const { expect } = chai;
-
-// describe("text get route /test", function () {
-//   it("should return message coucou and status 200", function (done) {
-//     chai
-//       .request("http://localhost:3000")
-//       .get("/test")
-//       .end(function (err, res) {
-//         // console.log(res);
-//         expect(res).to.have.status(200);
-//         expect(res.body).to.have.property("message");
-//         done();
-//       });
-//   });
-// });
-
 import supertest from "supertest";
 import { app } from "../../app.js";
 
@@ -50,7 +25,7 @@ test("POST /api/auth/signup", async () => {
   expect(res.status).toEqual(200);
 });
 
-test("POST /api/auth/signup", async () => {
+test("POST /api/auth/signup return 409 cause email already exist", async () => {
   const reqBody = {
     name: "gigi",
     email: "mickael.gonzales30@outlook.fr",
@@ -62,7 +37,7 @@ test("POST /api/auth/signup", async () => {
     .send(reqBody)
     .set("Content-Type", "application/json");
 
-  expect(res.status).toEqual(404);
+  expect(res.status).toEqual(409);
 });
 
 test("POST /api/auth/signin", async () => {

@@ -4,7 +4,7 @@ import {
   userSignIn,
   userSignOut,
 } from "../../controllers/userController.js";
-import { ensureIsAuthenticated } from "../../config/authConfig.js";
+// import { ensureIsAuthenticated } from "../../config/authConfig.js";
 import {
   createFormToken,
   verifyToken,

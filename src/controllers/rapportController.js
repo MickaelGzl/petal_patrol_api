@@ -1,5 +1,5 @@
 import { verifyUserCanMakeAction } from "../config/authConfig.js";
-import { fileUploadConfig } from "../config/multerConfig.js";
+import { deleteFile, fileUploadConfig } from "../config/multerConfig.js";
 import {
   findOfferByGuardianId,
   findOfferById,

@@ -20,7 +20,7 @@ import {
 } from "../config/csrfConfig.js";
 import { emailFactory } from "../mailer/index.js";
 import { createWaitingBotanist } from "../queries/waitingBotanistQueries.js";
-import { verifyUserCanMakeAction } from "../config/authConfig.js";
+// import { verifyUserCanMakeAction } from "../config/authConfig.js";
 
 dotenv.config();
 const upload = fileUploadConfig("users");
