@@ -81,7 +81,7 @@ class Email {
         join(this.mailerPath, "/templates/validateEmailTemplate.pug"),
         {
           email: options.to,
-          url: `${options.url}/api/user/validate/${options.token}/${options.serverToken}`,
+          url: `${options.url}/views/email-validation/${options.token}/${options.serverToken}`,
         }
       ),
       attachments: [

@@ -13,14 +13,14 @@ import {
   userUpdateEmail,
   userUpdateAvatar,
   userUpdateName,
-  userValidateEmail,
+  // userValidateEmail,
   // userValidAccount,
 } from "../../controllers/userController.js";
 
 export const router = Router();
 
 router.get("/", ensureIsAuthenticated, ensureUserHaveRights, userFindAll);
-router.get("/validate/:token/:serverToken", userValidateEmail);
+// router.get("/validate/:token/:serverToken", userValidateEmail);
 router.get("/:id", ensureIsAuthenticated, userFindOne);
 
 router.post("/reset-password", userPasswordForgot);

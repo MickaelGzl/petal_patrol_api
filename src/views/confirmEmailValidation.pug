@@ -1,0 +1,24 @@
+doctype html
+html
+  head
+    block head
+      meta(charset="utf-8")
+      meta(name="viewport", content="width=device-width")
+      meta(http-equiv="X-UA-Compatible", content="IE=edge")
+      meta(name="x-apple-disable-message-reformatting")
+      style 
+        include style.css
+  body
+    div(class='head')
+      span Email Validation
+      svg(xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 40 40" fill="none")
+        path(d="M30.011 0C30.011 0 26.72 3.19294 23.1607 4.48023C-3.19684 14.0139 7.91927 32.5923 8.28191 32.6535C8.28191 32.6535 9.75992 30.0796 11.7565 28.6116C24.4258 19.2977 27.0008 8.57707 27.0008 8.57707C27.0008 8.57707 24.1578 21.4775 12.8866 29.5044C10.3971 31.2764 8.71152 35.6393 7.99798 40C7.99798 40 9.7626 39.287 10.5214 39.0939C10.8173 37.163 11.436 35.314 12.4819 33.6622C28.2349 35.5378 33.3943 22.8443 34.0683 18.4181C35.6591 7.96458 30.011 0 30.011 0Z" fill="#B55D45")
+
+    div(class="content")
+      div(class="center")
+        p(id="res")=message
+
+    script(src="/script.js")
+
+
+  

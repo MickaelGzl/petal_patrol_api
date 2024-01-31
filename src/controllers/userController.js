@@ -157,21 +157,25 @@ export const userValidateEmail = async (req, res) => {
       !validateTokenWithSecret(process.env.CSRF_SECRET, req.params.serverToken)
     ) {
       message = "Token invalide";
-      return res.status(401).json({ message });
+      // return res.status(401).json({ message });
+      return res.render("confirmEmailValidation", { message });
     }
     const user = await findUserByToken(req.params.token);
     if (!user) {
       message = "Aucun utilisateur pour l'identifiant fournis.";
-      return res.status(404).json({ message });
+      // return res.status(404).json({ message });
+      return res.render("confirmEmailValidation", { message });
     }
     await validUser(user);
     message =
       "Le compte est désormais valide. Vous pouvez vous connecter sur l'application";
-    return res.json({ message });
+    // return res.json({ message });
+    return res.render("confirmEmailValidation", { message });
   } catch (error) {
     console.error("<userController: userValidateEmail>", error);
     message = "Erreur lors de la validation de l'email de l'utilisateurs.";
-    res.status(500).json({ message });
+    // res.status(500).json({ message });
+    return res.render("confirmEmailValidation", { message });
   }
 };
 
@@ -417,6 +421,23 @@ export const userResetPassword = async (req, res) => {
   }
 };
 
+export const redirectToPasswordForm = (req, res) => {
+  let message;
+  try {
+    if (
+      !req.params.serverToken ||
+      !validateTokenWithSecret(process.env.CSRF_SECRET, req.params.serverToken)
+    ) {
+      message = "Token invalide";
+      return res.status(401).json({ message });
+    }
+    res.render("resetPasswordForm");
+  } catch (error) {
+    console.error("error");
+    message = "erreur lors de la redirection utilisateur.";
+    return res.status(500).json({ message });
+  }
+};
 /**
  * update user avatar.
  * Only own user can update his avatar

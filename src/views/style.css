@@ -109,6 +109,15 @@ p {
   color: #fff;
 }
 
+.center {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
 @media screen and (max-width: 512px) {
   .head > span {
     font-size: 24px;
