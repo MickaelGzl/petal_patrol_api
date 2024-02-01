@@ -49,15 +49,17 @@ export const userCreate = async (req, res) => {
       message =
         "Enregistré avec succès. En attente de validation de l'administrateur";
     } else {
-      const token = createTokenFromSecret(process.env.CSRF_SECRET);
-      emailFactory.sendEmailVerificationLink({
-        to: req.body.email,
-        url: `${req.protocol}://${req.get("host")}`,
-        token: user.activation_token,
-        serverToken: token,
-      });
-      message =
-        "Enregistré avec succès. Veuillez vérifier vos mails afin de valider votre compte avant de vous connecter.";
+      if (process.env.NODE_ENV.trim() !== "test") {
+        const token = createTokenFromSecret(process.env.CSRF_SECRET);
+        emailFactory.sendEmailVerificationLink({
+          to: req.body.email,
+          url: `${req.protocol}://${req.get("host")}`,
+          token: user.activation_token,
+          serverToken: token,
+        });
+        message =
+          "Enregistré avec succès. Veuillez vérifier vos mails afin de valider votre compte avant de vous connecter.";
+      }
     }
     res.json({
       message,
