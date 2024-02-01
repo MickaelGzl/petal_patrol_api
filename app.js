@@ -25,7 +25,9 @@ app.set("views", join(fileURLToPath(import.meta.url), "../src/views/"));
 
 process.env.CSRF_SECRET = createCsrfSecret();
 
-connection();
+if (process.env.NODE_ENV.trim() !== "test") {
+  connection();
+}
 
 //create a window of 10min. each ip have the right to make 100 request during this window
 const limiter = rateLimit({
@@ -38,7 +40,11 @@ const limiter = rateLimit({
 app
   .use(
     cors({
-      origin: ["http://localhost:5173", "http://localhost:3000"],
+      origin: [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://localhost:8081",
+      ],
       credentials: true,
     })
   )

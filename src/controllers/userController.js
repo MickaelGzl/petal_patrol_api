@@ -59,7 +59,6 @@ export const userCreate = async (req, res) => {
       message =
         "Enregistré avec succès. Veuillez vérifier vos mails afin de valider votre compte avant de vous connecter.";
     }
-
     res.json({
       message,
       user: { name: user.name, email: user.email },

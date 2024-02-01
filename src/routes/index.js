@@ -12,7 +12,7 @@ router.use("/api", apiRoute);
 router.use("/views", viewRoute);
 
 router.get("/test", (req, res) => {
-  res.json({ message: "coucou" });
+  res.json({ message: "hello world" });
 });
 
 router.use("*", (req, res) => {

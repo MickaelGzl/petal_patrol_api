@@ -24,11 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (value.length > 8) {
       resMessage.innerText =
         "Votre mot de passe doit faire plus de 8 caractères.";
+      return;
     }
     try {
+      const loc = window.location;
       const params = window.location.pathname.split("/");
       const res = await fetch(
-        `http://localhost:3000/api/user/reset-password/${params[3]}/${params[4]}`,
+        `${loc.protocol}//${loc.host}/api/user/reset-password/${params[3]}/${params[4]}`,
         {
           method: "POST",
           headers: {

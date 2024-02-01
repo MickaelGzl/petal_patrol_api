@@ -44,7 +44,7 @@ export const fileUploadConfig = (fileFolder) => {
       destination: getDestination(fileFolder),
     }),
     limits: {
-      fileSize: 1048576,
+      fileSize: 5242880,
     },
     fileFilter: (req, file, cb) => {
       if (!authorizedMimeTypes.includes(file.mimetype.split("/")[1])) {
