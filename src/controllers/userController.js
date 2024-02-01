@@ -57,9 +57,9 @@ export const userCreate = async (req, res) => {
           token: user.activation_token,
           serverToken: token,
         });
-        message =
-          "Enregistré avec succès. Veuillez vérifier vos mails afin de valider votre compte avant de vous connecter.";
       }
+      message =
+        "Enregistré avec succès. Veuillez vérifier vos mails afin de valider votre compte avant de vous connecter.";
     }
     res.json({
       message,
