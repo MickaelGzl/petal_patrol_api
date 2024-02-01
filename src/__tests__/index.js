@@ -3,7 +3,7 @@ import { app } from "../../app.js";
 import { jest } from "@jest/globals";
 
 jest.mock("../db/server.js");
-import { User } from "../db/server.js";
+import { User, Role } from "../db/server.js";
 
 const req = supertest(app);
 
@@ -28,6 +28,7 @@ test("POST /api/auth/signup", async () => {
       activation_token: "randomString",
     }),
   });
+  jest.spyOn(Role, "findOne").mockResolvedValue({ id: 1, role: "User" });
 
   const reqBody = {
     name: "gigi",
